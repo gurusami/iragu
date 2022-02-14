@@ -1,0 +1,71 @@
+<!doctype>
+<head>
+ <title> Iragu: Badminton Court Management </title>
+</head>
+
+<body>
+<h1> Iragu: Badminton Court Management </h1>
+
+<p> The purpose of this document is to help me remember various details.  Since
+  this is hobby work, I'll work on it erratically.  Hopefully this document
+  will remind me about what and why I did something. </p>
+
+<h2> My Development Environment </h2>
+
+<ol>
+  <li> Ubuntu 20.04.3 LTS (Focal Fossa) - Ubuntu MATE variant </li>
+  <li> Apache Web Server (Apache/2.4.41)</li>
+  <li> PHP 7.4.3 </li>
+  <li> MySQL 8.0.28 </li>
+</ol>
+
+<h2> Setting up MySQL </h2>
+
+As MySQL root user:
+
+<pre>
+mysql> CREATE DATABASE kdb;
+mysql> CREATE USER 'queen'@'localhost' IDENTIFIED BY '/C0rona+V1rus/';
+mysql> GRANT ALL ON kdb.* TO 'queen'@'localhost' WITH GRANT;
+mysql> GRANT PROCESS ON *.* TO 'queen'@'localhost';
+</pre>
+
+<ol>
+ <li> Create the necessary databases.  Currently only one is used.
+  <pre> mysql> CREATE DATABASE kdb; </pre> </li>
+
+ <li> Create a non-root MySQL user 'queen', who will be the admin of kdb
+ database used by the iragu webapp.
+  <blockquote> NOTE: Just for a valid SQL statement I have provided a password
+  here. Kindly change it while using it. </blockquote>
+  <pre> mysql> CREATE USER 'queen'@'localhost' IDENTIFIED BY '/C0rona+V1rus/';
+  </pre> </li>
+
+ <li> Grant all privileges to the non-root MySQL user 'queen' on the kdb
+ database.
+  <pre> mysql> GRANT ALL ON kdb.* TO 'queen'@'localhost' WITH GRANT; </pre>
+ </li>
+
+ <li> To run mysqldump on kdb, the non-root MySQL user 'queen' need the PROCESS
+ privilege. Grant the same.
+  <pre> mysql> GRANT PROCESS ON *.* TO 'queen'@'localhost'; </pre></li>
+</ol>
+
+<h2> Backup of Database </h2>
+
+<p> For this small database, backup can be taken up using mysqldump.  Also,
+backup the user privileges. </p>
+
+<pre>
+  $ mysqldump -u queen -p --databases kdb > kdb-dump.sql
+  $ sudo mysql -e "show grants for queen@localhost" > grants.sql
+</pre>
+
+<h2> Operations </h2>
+
+<ul>
+  <li> Register a badminton player. </li>
+</ul>
+
+</body>
+</html>
