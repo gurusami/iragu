@@ -54,12 +54,32 @@ mysql> GRANT PROCESS ON *.* TO 'queen'@'localhost';
 <h2> Backup of Database </h2>
 
 <p> For this small database, backup can be taken up using mysqldump.  Also,
-backup the user privileges. </p>
+backup the user privileges. The kdb-schema.sql file contains only the data
+definition and hence will be part of git repo. The kdb-dump.sql will contain
+data which must not be in a git repo. </p>
 
 <pre>
+  $ mysqldump -u queen -p --databases --no-data kdb > kdb-schema.sql
   $ mysqldump -u queen -p --databases kdb > kdb-dump.sql
   $ sudo mysql -e "show grants for queen@localhost" > grants.sql
 </pre>
+
+<h2> Administrative Work on Database </h2>
+
+<p> To do all administrative work, the user queen@localhost is used.  Since this webapp
+uses only the database <i>kdb</i>, the following command should work. </p>
+
+<pre>
+  $ mysql -u queen -p kdb
+</pre>
+
+<h2> Database Tables </h2>
+
+<ul>
+  <li> The table <i>ir_people</i> is used to store information about any person
+  who needs to interact with the system. Each person is assigned a unique nick
+  name (maximum length of 8 chars). </li>
+</ul>
 
 <h2> Operations </h2>
 
