@@ -66,8 +66,9 @@ data which must not be in a git repo. </p>
 
 <h2> Administrative Work on Database </h2>
 
-<p> To do all administrative work, the user queen@localhost is used.  Since this webapp
-uses only the database <i>kdb</i>, the following command should work. </p>
+<p> To do all administrative work, the user queen@localhost is used.  Since this
+webapp uses only the database <i>kdb</i>, the following command should work.
+</p>
 
 <pre>
   $ mysql -u queen -p kdb
@@ -79,7 +80,12 @@ uses only the database <i>kdb</i>, the following command should work. </p>
   <li> The table <i>ir_people</i> is used to store information about any person
   who needs to interact with the system. Each person is assigned a unique nick
   name (maximum length of 8 chars). </li>
+  <li> The table <i>ir_login</i> is used to store login credentials of any user
+  who needs access to the iragu application. Only authenticated users can do
+  anything useful. Password is stored as SHA2(password, 256) function of MySQL.
+  </li>
 </ul>
+
 
 <h2> Operations </h2>
 

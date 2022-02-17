@@ -24,6 +24,23 @@ CREATE DATABASE /*!32312 IF NOT EXISTS*/ `kdb` /*!40100 DEFAULT CHARACTER SET ut
 USE `kdb`;
 
 --
+-- Table structure for table `ir_login`
+--
+
+DROP TABLE IF EXISTS `ir_login`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `ir_login` (
+  `username` char(8) NOT NULL,
+  `token` char(64) NOT NULL,
+  `usertype` enum('CUSTOMER','SERVICE') DEFAULT 'CUSTOMER',
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`username`),
+  CONSTRAINT `user_has_nick` FOREIGN KEY (`username`) REFERENCES `ir_people` (`nick`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `ir_people`
 --
 
@@ -52,4 +69,4 @@ CREATE TABLE `ir_people` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-02-16 22:09:07
+-- Dump completed on 2022-02-17 19:26:10
