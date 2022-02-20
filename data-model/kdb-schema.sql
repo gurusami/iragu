@@ -24,6 +24,123 @@ CREATE DATABASE /*!32312 IF NOT EXISTS*/ `kdb` /*!40100 DEFAULT CHARACTER SET ut
 USE `kdb`;
 
 --
+-- Table structure for table `ir_balance`
+--
+
+DROP TABLE IF EXISTS `ir_balance`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `ir_balance` (
+  `player_id` char(8) NOT NULL,
+  `balance` int DEFAULT NULL COMMENT 'In Paise',
+  `last_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`player_id`),
+  CONSTRAINT `player_valid` FOREIGN KEY (`player_id`) REFERENCES `ir_people` (`nick`),
+  CONSTRAINT `ir_balance_chk_1` CHECK ((`balance` >= 0))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `ir_booking`
+--
+
+DROP TABLE IF EXISTS `ir_booking`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `ir_booking` (
+  `booking_id` bigint NOT NULL,
+  `court_id` varchar(8) NOT NULL,
+  `player_id` varchar(8) NOT NULL,
+  `booking_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `play_date` date NOT NULL,
+  `from_slot` tinyint NOT NULL,
+  `to_slot` tinyint NOT NULL,
+  `offer_id` char(8) DEFAULT NULL,
+  `price` int NOT NULL,
+  PRIMARY KEY (`booking_id`),
+  KEY `player_id` (`player_id`),
+  KEY `offer_valid` (`court_id`,`offer_id`),
+  CONSTRAINT `court_valid` FOREIGN KEY (`court_id`) REFERENCES `ir_court` (`court_id`),
+  CONSTRAINT `ir_booking_ibfk_1` FOREIGN KEY (`player_id`) REFERENCES `ir_people` (`nick`),
+  CONSTRAINT `offer_valid` FOREIGN KEY (`court_id`, `offer_id`) REFERENCES `ir_court_offers` (`court_id`, `offer_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `ir_booking_slots`
+--
+
+DROP TABLE IF EXISTS `ir_booking_slots`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `ir_booking_slots` (
+  `play_date` date NOT NULL,
+  `play_slot` tinyint NOT NULL,
+  `player_id` varchar(8) NOT NULL,
+  PRIMARY KEY (`play_date`,`play_slot`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `ir_campus`
+--
+
+DROP TABLE IF EXISTS `ir_campus`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `ir_campus` (
+  `campus_id` varchar(8) NOT NULL,
+  `campus_name` varchar(128) NOT NULL,
+  `address_1` varchar(128) DEFAULT NULL,
+  `address_2` varchar(128) DEFAULT NULL,
+  `landmark` varchar(128) NOT NULL,
+  `city` varchar(40) NOT NULL,
+  `pincode` char(6) NOT NULL,
+  `state_code` char(2) NOT NULL,
+  `country_code` char(2) NOT NULL,
+  PRIMARY KEY (`campus_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `ir_court`
+--
+
+DROP TABLE IF EXISTS `ir_court`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `ir_court` (
+  `court_id` varchar(8) NOT NULL,
+  `campus_id` varchar(8) NOT NULL,
+  `base_ppm` int NOT NULL,
+  `court_info` varchar(100) NOT NULL,
+  PRIMARY KEY (`court_id`),
+  KEY `campus_id_valid` (`campus_id`),
+  CONSTRAINT `campus_id_valid` FOREIGN KEY (`campus_id`) REFERENCES `ir_campus` (`campus_id`),
+  CONSTRAINT `ir_court_chk_1` CHECK ((`base_ppm` > 0))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `ir_court_offers`
+--
+
+DROP TABLE IF EXISTS `ir_court_offers`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `ir_court_offers` (
+  `court_id` varchar(8) NOT NULL,
+  `offer_id` varchar(8) NOT NULL,
+  `discount` tinyint NOT NULL COMMENT 'In percentage',
+  `offer_from` date NOT NULL,
+  `offer_to` date NOT NULL,
+  `notes` varchar(100) DEFAULT NULL COMMENT 'Reason for discount',
+  PRIMARY KEY (`court_id`,`offer_id`),
+  CONSTRAINT `court_is_valid` FOREIGN KEY (`court_id`) REFERENCES `ir_court` (`court_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `ir_login`
 --
 
@@ -56,24 +173,70 @@ CREATE TABLE `ir_people` (
   `aadhar` char(12) DEFAULT NULL,
   `dob` date DEFAULT NULL,
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`nick`)
+  `offer_id` varchar(8) DEFAULT NULL,
+  PRIMARY KEY (`nick`),
+  KEY `offer_id` (`offer_id`),
+  CONSTRAINT `ir_people_ibfk_1` FOREIGN KEY (`offer_id`) REFERENCES `ir_register_offers` (`offer_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `ir_playtime`
+-- Table structure for table `ir_recharge`
 --
 
-DROP TABLE IF EXISTS `ir_playtime`;
+DROP TABLE IF EXISTS `ir_recharge`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `ir_playtime` (
-  `nick` char(8) NOT NULL,
-  `playtime` int DEFAULT NULL,
-  `last_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`nick`),
-  CONSTRAINT `nick_is_valid` FOREIGN KEY (`nick`) REFERENCES `ir_people` (`nick`),
-  CONSTRAINT `ir_playtime_chk_1` CHECK ((`playtime` >= 0))
+CREATE TABLE `ir_recharge` (
+  `recharge_id` bigint NOT NULL AUTO_INCREMENT,
+  `user_id` char(8) NOT NULL,
+  `offer_id` char(8) NOT NULL,
+  `pay_mode` enum('Cash','UPI','Bank') DEFAULT NULL,
+  `pay_notes` char(40) DEFAULT NULL COMMENT 'Add references numbers',
+  `recharge_amount` int NOT NULL,
+  `recharge_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`recharge_id`),
+  KEY `user_id` (`user_id`),
+  KEY `offer_id` (`offer_id`),
+  CONSTRAINT `ir_recharge_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `ir_people` (`nick`),
+  CONSTRAINT `ir_recharge_ibfk_2` FOREIGN KEY (`offer_id`) REFERENCES `ir_recharge_offers` (`offer_id`),
+  CONSTRAINT `ir_recharge_chk_1` CHECK ((`recharge_amount` > 0))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `ir_recharge_offers`
+--
+
+DROP TABLE IF EXISTS `ir_recharge_offers`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `ir_recharge_offers` (
+  `offer_id` varchar(8) NOT NULL,
+  `offer_from` date NOT NULL,
+  `offer_to` date NOT NULL,
+  `discount` tinyint NOT NULL COMMENT 'In percentage',
+  `notes` varchar(100) DEFAULT NULL COMMENT 'reason for discount',
+  PRIMARY KEY (`offer_id`),
+  CONSTRAINT `ir_recharge_offers_chk_1` CHECK ((`discount` < 50))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `ir_register_offers`
+--
+
+DROP TABLE IF EXISTS `ir_register_offers`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `ir_register_offers` (
+  `offer_id` varchar(8) NOT NULL,
+  `offer_from` date NOT NULL,
+  `offer_to` date NOT NULL,
+  `discount` tinyint NOT NULL COMMENT 'In percentage',
+  `notes` varchar(100) DEFAULT NULL COMMENT 'reason for discount',
+  PRIMARY KEY (`offer_id`),
+  CONSTRAINT `ir_register_offers_chk_1` CHECK ((`discount` < 50))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -86,4 +249,4 @@ CREATE TABLE `ir_playtime` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-02-20 15:19:25
+-- Dump completed on 2022-02-20 17:32:27

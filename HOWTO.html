@@ -26,7 +26,7 @@ As MySQL root user:
 
 <pre>
 mysql> CREATE DATABASE kdb;
-mysql> CREATE USER 'queen'@'localhost' IDENTIFIED BY '/C0rona+V1rus/';
+mysql> CREATE USER 'queen'@'localhost' IDENTIFIED BY 'dummy';
 mysql> GRANT ALL ON kdb.* TO 'queen'@'localhost' WITH GRANT;
 mysql> GRANT PROCESS ON *.* TO 'queen'@'localhost';
 </pre>
@@ -39,7 +39,7 @@ mysql> GRANT PROCESS ON *.* TO 'queen'@'localhost';
  database used by the iragu webapp.
   <blockquote> NOTE: Just for a valid SQL statement I have provided a password
   here. Kindly change it while using it. </blockquote>
-  <pre> mysql> CREATE USER 'queen'@'localhost' IDENTIFIED BY '/C0rona+V1rus/';
+  <pre> mysql> CREATE USER 'queen'@'localhost' IDENTIFIED BY 'dummy';
   </pre> </li>
 
  <li> Grant all privileges to the non-root MySQL user 'queen' on the kdb
