@@ -59,6 +59,23 @@ CREATE TABLE `ir_people` (
   PRIMARY KEY (`nick`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `ir_playtime`
+--
+
+DROP TABLE IF EXISTS `ir_playtime`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `ir_playtime` (
+  `nick` char(8) NOT NULL,
+  `playtime` int DEFAULT NULL,
+  `last_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`nick`),
+  CONSTRAINT `nick_is_valid` FOREIGN KEY (`nick`) REFERENCES `ir_people` (`nick`),
+  CONSTRAINT `ir_playtime_chk_1` CHECK ((`playtime` >= 0))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -69,4 +86,4 @@ CREATE TABLE `ir_people` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-02-17 19:26:10
+-- Dump completed on 2022-02-20 15:19:25
