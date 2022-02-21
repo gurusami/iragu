@@ -21,13 +21,40 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 session_start();
 
- if (isset($_SESSION['userid'])) {
-   echo '<h2> Hello ' . $_SESSION['userid'] . ' </h2>';
- } else {
+if (!isset($_SESSION['userid'])) {
    header('Location: ' . 'index.php');
+   exit();
  }
-
 ?>
 
-<a href="logout.php"> Logout </a>
+<!doctype html>
+
+<?php include 'copyright.php'; ?>
+
+<html>
+<head>
+ <title> Iragu: Badminton Court Management Software </title>
+</head>
+
+<body>
+
+<?php
+if (isset($_POST['username'])) {
+   $page->report_failure();
+   $page->disconnect();
+}
+?>
+
+<div style="width: 80%;">
+  <button class="menu">
+    <a href="make-register-offer.php">Make a registration offer</a>
+  </button>
+</div>
+
+<div style="width: 80%;">
+  <button class="menu"> <a href="logout.php">Logout</a> </button>
+</div>
+
+</body>
+</html>
 

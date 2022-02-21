@@ -21,25 +21,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 session_start();
 
-class LoginPage {
-  public $mysqli;
+include 'iragu-webapp.php';
+
+class LoginPage extends IraguWebapp {
   public $pass;
-
-  public function connect() {
-    $this->mysqli = mysqli_init();
-
-    if (!$this->mysqli) {
-      die('mysqli_init failed');
-    }
-
-    /* The user l2admin can do SELECT, INSERT, UPDATE, DELETE operations on
-    all tables in kdb database. */
-    if (!$this->mysqli->real_connect('localhost', 'l2admin', '#TNExit2030#',
-        'kdb')) {
-       die('Connect Error (' . mysqli_connect_errno() . ') '
-            . mysqli_connect_error());
-    }
-  }
 
   public function validate($user, $password) {
     $stmt = $this->mysqli->prepare("SELECT sha2(?, 256) = token FROM " .
@@ -64,9 +49,6 @@ class LoginPage {
     }
   }
 
-  public function cleanup() {
-      $this->mysqli->close();
-  }
 }
 
 $page = new LoginPage();
@@ -98,7 +80,7 @@ if (isset($_POST['username'])) {
 <?php
 if (isset($_POST['username'])) {
    $page->report_failure();
-   $page->cleanup();
+   $page->disconnect();
 }
 ?>
 
