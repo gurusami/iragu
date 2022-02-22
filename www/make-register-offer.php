@@ -145,7 +145,7 @@ if (isset($_POST['offer_id'])) {
 $page->output_begin();
 
 if (isset($_POST['offer_id'])) {
-   $page->report_status();
+   $page->displayStatus();
 }
 
 ?>

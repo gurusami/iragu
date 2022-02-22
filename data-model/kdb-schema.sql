@@ -31,11 +31,11 @@ DROP TABLE IF EXISTS `ir_balance`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `ir_balance` (
-  `player_id` char(8) NOT NULL,
+  `nick` varchar(8) NOT NULL,
   `balance` int DEFAULT NULL COMMENT 'In Paise',
   `last_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`player_id`),
-  CONSTRAINT `player_valid` FOREIGN KEY (`player_id`) REFERENCES `ir_people` (`nick`),
+  PRIMARY KEY (`nick`),
+  CONSTRAINT `player_valid` FOREIGN KEY (`nick`) REFERENCES `ir_people` (`nick`),
   CONSTRAINT `ir_balance_chk_1` CHECK ((`balance` >= 0))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -50,7 +50,7 @@ DROP TABLE IF EXISTS `ir_booking`;
 CREATE TABLE `ir_booking` (
   `booking_id` bigint NOT NULL,
   `court_id` varchar(8) NOT NULL,
-  `player_id` varchar(8) NOT NULL,
+  `nick` varchar(8) NOT NULL,
   `booking_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `play_date` date NOT NULL,
   `from_slot` tinyint NOT NULL,
@@ -58,10 +58,10 @@ CREATE TABLE `ir_booking` (
   `offer_id` char(8) DEFAULT NULL,
   `price` int NOT NULL,
   PRIMARY KEY (`booking_id`),
-  KEY `player_id` (`player_id`),
   KEY `offer_valid` (`court_id`,`offer_id`),
+  KEY `nick` (`nick`),
   CONSTRAINT `court_valid` FOREIGN KEY (`court_id`) REFERENCES `ir_court` (`court_id`),
-  CONSTRAINT `ir_booking_ibfk_1` FOREIGN KEY (`player_id`) REFERENCES `ir_people` (`nick`),
+  CONSTRAINT `ir_booking_ibfk_1` FOREIGN KEY (`nick`) REFERENCES `ir_people` (`nick`),
   CONSTRAINT `offer_valid` FOREIGN KEY (`court_id`, `offer_id`) REFERENCES `ir_court_offers` (`court_id`, `offer_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -148,13 +148,32 @@ DROP TABLE IF EXISTS `ir_login`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `ir_login` (
-  `username` char(8) NOT NULL,
+  `nick` varchar(8) NOT NULL,
   `token` char(64) NOT NULL,
   `usertype` enum('CUSTOMER','SERVICE') DEFAULT 'CUSTOMER',
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`username`),
-  CONSTRAINT `user_has_nick` FOREIGN KEY (`username`) REFERENCES `ir_people` (`nick`)
+  PRIMARY KEY (`nick`),
+  CONSTRAINT `ir_login_ibfk_1` FOREIGN KEY (`nick`) REFERENCES `ir_people` (`nick`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `ir_passbook`
+--
+
+DROP TABLE IF EXISTS `ir_passbook`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `ir_passbook` (
+  `trx_id` bigint NOT NULL AUTO_INCREMENT,
+  `nick` varchar(8) NOT NULL,
+  `trx_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `trx_info` varchar(64) NOT NULL,
+  `trx_amount` int NOT NULL,
+  PRIMARY KEY (`trx_id`),
+  KEY `nick` (`nick`),
+  CONSTRAINT `ir_passbook_ibfk_1` FOREIGN KEY (`nick`) REFERENCES `ir_people` (`nick`)
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -165,7 +184,7 @@ DROP TABLE IF EXISTS `ir_people`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `ir_people` (
-  `nick` char(8) NOT NULL,
+  `nick` varchar(8) NOT NULL,
   `full_name` varchar(30) DEFAULT NULL,
   `gender` enum('M','F','O') DEFAULT NULL,
   `email` varchar(256) DEFAULT NULL,
@@ -174,9 +193,12 @@ CREATE TABLE `ir_people` (
   `dob` date DEFAULT NULL,
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `offer_id` varchar(8) DEFAULT NULL,
+  `registered_by` varchar(8) NOT NULL,
   PRIMARY KEY (`nick`),
   KEY `offer_id` (`offer_id`),
-  CONSTRAINT `ir_people_ibfk_1` FOREIGN KEY (`offer_id`) REFERENCES `ir_register_offers` (`offer_id`)
+  KEY `registered_by` (`registered_by`),
+  CONSTRAINT `ir_people_ibfk_1` FOREIGN KEY (`offer_id`) REFERENCES `ir_register_offers` (`offer_id`),
+  CONSTRAINT `ir_people_ibfk_2` FOREIGN KEY (`registered_by`) REFERENCES `ir_people` (`nick`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -189,17 +211,17 @@ DROP TABLE IF EXISTS `ir_recharge`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `ir_recharge` (
   `recharge_id` bigint NOT NULL AUTO_INCREMENT,
-  `user_id` char(8) NOT NULL,
+  `nick` varchar(8) DEFAULT NULL,
   `offer_id` char(8) NOT NULL,
   `pay_mode` enum('Cash','UPI','Bank') DEFAULT NULL,
   `pay_notes` char(40) DEFAULT NULL COMMENT 'Add references numbers',
   `recharge_amount` int NOT NULL,
   `recharge_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`recharge_id`),
-  KEY `user_id` (`user_id`),
   KEY `offer_id` (`offer_id`),
-  CONSTRAINT `ir_recharge_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `ir_people` (`nick`),
+  KEY `nick` (`nick`),
   CONSTRAINT `ir_recharge_ibfk_2` FOREIGN KEY (`offer_id`) REFERENCES `ir_recharge_offers` (`offer_id`),
+  CONSTRAINT `ir_recharge_ibfk_3` FOREIGN KEY (`nick`) REFERENCES `ir_people` (`nick`),
   CONSTRAINT `ir_recharge_chk_1` CHECK ((`recharge_amount` > 0))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -233,10 +255,15 @@ CREATE TABLE `ir_register_offers` (
   `offer_id` varchar(8) NOT NULL,
   `offer_from` date NOT NULL,
   `offer_to` date NOT NULL,
-  `discount` tinyint NOT NULL COMMENT 'In percentage',
-  `notes` varchar(100) DEFAULT NULL COMMENT 'reason for discount',
+  `cash_back` smallint NOT NULL,
+  `notes` varchar(100) NOT NULL COMMENT 'Give reason for cash back',
+  `offer_by` varchar(8) DEFAULT NULL,
+  `offer_created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`offer_id`),
-  CONSTRAINT `ir_register_offers_chk_1` CHECK ((`discount` < 50))
+  KEY `offer_by` (`offer_by`),
+  CONSTRAINT `ir_register_offers_ibfk_1` FOREIGN KEY (`offer_by`) REFERENCES `ir_people` (`nick`),
+  CONSTRAINT `cashback_limit` CHECK ((`cash_back` < 10000)),
+  CONSTRAINT `date_order` CHECK ((`offer_from` <= `offer_to`))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -249,4 +276,4 @@ CREATE TABLE `ir_register_offers` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-02-20 17:32:27
+-- Dump completed on 2022-02-22 22:49:55

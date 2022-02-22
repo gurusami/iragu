@@ -64,16 +64,39 @@ EOF;
     }
   }
 
-  public function report_status() {
-     if ($this->success) {
-         echo '<p> SUCCESS </p>';
-     } else {
-         echo '<p> FAILURE: ' . $this->errmsg . ' </p>';
+  public function is_user_authenticated() {
+    session_start();
+    if (!isset($_SESSION['userid'])) {
+      header('Location: ' . 'index.php');
+      exit();
+    }
+    return TRUE;
+  }
+
+  public function displayStatus() {
+     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        if ($this->success) {
+           echo '<p> SUCCESS </p>';
+        } else {
+           echo '<p> FAILURE: ' . $this->errmsg . ' </p>';
+        }
      }
   }
 
   public function disconnect() {
       $this->mysqli->close();
+  }
+
+  public function displayTitle() {
+     echo 'Iragu: Badminton Court Management Software';
+  }
+
+  public function displayCopyright() {
+     echo $this->copyright_notice;
+  }
+
+  public function displaySelfURL() {
+     echo htmlspecialchars($_SERVER["PHP_SELF"]);
   }
 
   public function output_begin() {

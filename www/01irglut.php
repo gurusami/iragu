@@ -18,50 +18,14 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 *******************************************************************************/
-include 'iragu-webapp.php';
+/* Iragu: Global: Utils: Common utility functions not specific to a page. */
 
-class IraguMenu extends IraguWebapp {
+function paiseToRupees($paise) {
+   return number_format((float) $paise / 100, 2, '.', '');
 }
 
-$page = new IraguMenu();
-$page->is_user_authenticated();
-// $page->work();
-?>
-
-<!doctype html>
-
-<?php include 'copyright.php'; ?>
-
-<html>
-<head>
- <title> <?php $page->displayTitle(); ?> </title>
-</head>
-
-<body>
-
-<?php
-if (isset($_POST['username'])) {
-   $page->report_failure();
-   $page->disconnect();
+function displayInRupees($paise) {
+   echo number_format((float) $paise / 100, 2, '.', '');
 }
+
 ?>
-
-<div style="width: 80%;">
-  <button class="menu">
-    <a href="make-register-offer.php">Make a registration offer</a>
-  </button>
-</div>
-
-<div style="width: 80%;">
-  <button class="menu">
-    <a href="00iradre.php">Register a Customer</a>
-  </button>
-</div>
-
-<div style="width: 80%;">
-  <button class="menu"> <a href="logout.php">Logout</a> </button>
-</div>
-
-</body>
-</html>
-
