@@ -54,6 +54,12 @@ if (isset($_POST['username'])) {
 
 <div style="width: 80%;">
   <button class="menu">
+    <a href="02iradro.php">Make Recharge Offer</a>
+  </button>
+</div>
+
+<div style="width: 80%;">
+  <button class="menu">
     <a href="00iradre.php">Register a Customer</a>
   </button>
 </div>

@@ -237,10 +237,13 @@ CREATE TABLE `ir_recharge_offers` (
   `offer_id` varchar(8) NOT NULL,
   `offer_from` date NOT NULL,
   `offer_to` date NOT NULL,
-  `discount` tinyint NOT NULL COMMENT 'In percentage',
+  `cashback` smallint DEFAULT '0',
   `notes` varchar(100) DEFAULT NULL COMMENT 'reason for discount',
+  `offer_made_on` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `offer_made_by` varchar(8) NOT NULL,
   PRIMARY KEY (`offer_id`),
-  CONSTRAINT `ir_recharge_offers_chk_1` CHECK ((`discount` < 50))
+  KEY `offer_made_by` (`offer_made_by`),
+  CONSTRAINT `ir_recharge_offers_ibfk_1` FOREIGN KEY (`offer_made_by`) REFERENCES `ir_people` (`nick`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -276,4 +279,4 @@ CREATE TABLE `ir_register_offers` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-02-22 22:49:55
+-- Dump completed on 2022-02-23 20:25:07

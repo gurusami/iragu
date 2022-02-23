@@ -28,7 +28,7 @@ class LoginPage extends IraguWebapp {
 
   public function validate($user, $password) {
     $stmt = $this->mysqli->prepare("SELECT sha2(?, 256) = token FROM " .
-       " ir_login WHERE username = ?");
+       " ir_login WHERE nick = ?");
 
     $stmt->bind_param('ss', $password,  $user);
     $stmt->execute();

@@ -110,6 +110,17 @@ echo <<<EOF
 <body>
 EOF;
   }
+
+  /** Collect the necessary data from the database to display to the end user.
+  This is done when a page is displayed with a form (form is not yet submitted).
+  The default implementation in this base class is to do nothing. */
+  public function beReady() {
+  }
+
+  /** Process the POST data when a form is submitted.  The default
+  implementation in this base class is to do nothing. */
+  public function work() {
+  }
 }
 
 ?>

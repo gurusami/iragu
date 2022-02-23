@@ -18,30 +18,87 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 *******************************************************************************/
-
-session_start();
-
-if (!isset($_SESSION['userid'])) {
-   header('Location: ' . 'index.php');
-   exit();
-}
-
+/* Iragu: Admin Interface: Recharge Offer: Make a Recharge Offer. */
 include 'iragu-webapp.php';
 include '01irglut.php';
 
-class IraguMakeRegisterOffer extends IraguWebapp {
-
+class IraguAdminRechargeOffer extends IraguWebapp {
    public $offer_id   = "";
    public $offer_from = "";
    public $offer_to   = "";
    public $cashback   = ""; /* in paise */
-   public $reason     = "";
+   public $notes      = "";
    public $offer_by   = "";
 
-   public function list_upcoming_offers() {
+   public function isOfferPeriodValid() {
+     $query = 'SELECT COUNT(*) FROM ir_recharge_offers WHERE ' .
+              ' ? BETWEEN offer_from AND offer_to OR ' .
+              ' ? BETWEEN offer_from AND offer_to OR ' .
+              ' (? < CURRENT_DATE AND ? < CURRENT_DATE)';
+     $stmt = $this->mysqli->prepare($query);
+     $this->success = $stmt->bind_param('ssss', $this->offer_from,
+                                                $this->offer_to,
+                                                $this->offer_from,
+                                                $this->offer_to);
+     if (!$this->success) {
+         $this->errmsg = $stmt->error;
+         return $this->success;
+     }
+     $this->success = $stmt->execute();
+     if (!$this->success) {
+         $this->errmsg = $stmt->error;
+         return $this->success;
+     }
+     $stmt->bind_result($count);
+     $stmt->fetch();
+     if ($count == 0) {
+        $this->success = TRUE;
+     } else {
+        $this->success = FALSE;
+        $this->errmsg = "Offer date overlaps with another offer or ";
+        $this->errmsg += "Offer date is in the past";
+     }
+     return $this->success;
+   }
+
+   public function work() {
+     if (!isset($_POST['offer_id'])) {
+        return;
+     }
+     $this->offer_id   = $_POST['offer_id'];
+     $this->offer_from = $_POST['offer_from'];
+     $this->offer_to   = $_POST['offer_to'];
+     $this->cashback   = $_POST['cash_back'] * 100; /* Convert to paise. */
+     $this->notes      = $_POST['reason'];
+     $this->offer_by   = $_SESSION['userid'];
+
+     $this->isOfferPeriodValid();
+     if ($this->success) {
+        $this->make_offer();
+     }
+   }
+
+   public function make_offer() {
+     $query = 'INSERT INTO ir_recharge_offers (offer_id, offer_from, ' .
+       'offer_to, cashback, notes, offer_made_by) VALUES (?, ?, ?, ?, ?, ?)';
+     $stmt = $this->mysqli->prepare($query);
+     $stmt->bind_param('sssiss', $this->offer_id,
+                                 $this->offer_from,
+                                 $this->offer_to,
+                                 $this->cashback,
+                                 $this->reason,
+                                 $this->offer_by);
+     $this->success = $stmt->execute();
+     if (!$this->success) {
+         $this->errmsg = $stmt->error;
+     }
+   }
+
+   public function displayUpcomingOffers() {
      $query = <<<EOF
-SELECT offer_id, offer_from, offer_to, cash_back, notes, offer_by
-FROM ir_register_offers
+SELECT offer_id, offer_from, offer_to, cashback, notes, offer_made_by,
+       offer_made_on
+FROM ir_recharge_offers
 WHERE CURRENT_DATE BETWEEN offer_from AND offer_to
 OR CURRENT_DATE < offer_from;
 EOF;
@@ -58,96 +115,42 @@ EOF;
      echo '<th> Cash Back </th> ';
      echo '<th> Reason </th> ';
      echo '<th> Offer By </th> ';
+     echo '<th> Offer Made On </th> ';
      echo '</tr> ';
 
      while ($row = $result->fetch_assoc()) {
          echo '<tr> ';
-         echo '<td> ' . $row['offer_id']   . ' </td> ';
-         echo '<td> ' . $row['offer_from'] . ' </td> ';
-         echo '<td> ' . $row['offer_to']   . ' </td> ';
-         echo '<td> ' . paiseToRupees($row['cash_back'])  . ' </td> ';
-         echo '<td> ' . $row['notes']      . ' </td> ';
-         echo '<td> ' . $row['offer_by']   . ' </td> ';
+         echo '<td> ' . $row['offer_id']        . ' </td> ';
+         echo '<td> ' . $row['offer_from']      . ' </td> ';
+         echo '<td> ' . $row['offer_to']        . ' </td> ';
+         echo '<td> ' . paiseToRupees($row['cashback'])        . ' </td> ';
+         echo '<td> ' . $row['notes']           . ' </td> ';
+         echo '<td> ' . $row['offer_made_by']   . ' </td> ';
+         echo '<td> ' . $row['offer_made_on']   . ' </td> ';
          echo '</tr> ';
      }
      echo '</table>';
      echo '</div>';
    }
-
-   public function check_offer_dates() {
-     $query = 'SELECT COUNT(*) FROM ir_register_offers WHERE ' .
-              ' ? BETWEEN offer_from AND offer_to OR ' .
-              ' ? BETWEEN offer_from AND offer_to OR ' .
-              ' (? < CURRENT_DATE AND ? < CURRENT_DATE)';
-     $stmt = $this->mysqli->prepare($query);
-     $this->success = $stmt->bind_param('ssss', 
-                                        $this->offer_from,
-                                        $this->offer_to,
-                                        $this->offer_from,
-                                        $this->offer_to);
-     if (!$this->success) {
-         $this->errmsg = $stmt->error;
-         return $this->success;
-     }
-     $this->success = $stmt->execute();
-     if (!$this->success) {
-         $this->errmsg = $stmt->error;
-         return $this->success;
-     }
-     $stmt->bind_result($count);
-     $stmt->fetch();
-     if ($count == 0) {
-        $this->success = TRUE;
-     } else {
-        $this->success = FALSE;
-        $this->errmsg = "Offer date overlaps with another offer";
-     }
-     return $this->success;
-   }
-
-   public function make_offer() {
-     $query = 'INSERT INTO ir_register_offers (offer_id, offer_from, ' .
-       'offer_to, cash_back, notes, offer_by) VALUES (?, ?, ?, ?, ?, ?)';
-     $stmt = $this->mysqli->prepare($query);
-     $stmt->bind_param('sssiss', $this->offer_id,
-                                 $this->offer_from,
-                                 $this->offer_to,
-                                 $this->cash_back,
-                                 $this->reason,
-                                 $this->offer_by);
-     $this->success = $stmt->execute();
-     if (!$this->success) {
-         $this->errmsg = $stmt->error;
-     }
-   }
 }
 
-$page = new IraguMakeRegisterOffer();
+$page = new IraguAdminRechargeOffer();
+$page->is_user_authenticated();
 $page->connect();
-
-if (isset($_POST['offer_id'])) {
-   /* Form is being submitted. */
-
-   $page->offer_id   = $_POST['offer_id'];
-   $page->offer_from = $_POST['offer_from'];
-   $page->offer_to   = $_POST['offer_to'];
-   $page->cash_back  = $_POST['cash_back'] * 100; /* in paise */
-   $page->reason     = $_POST['reason'];
-   $page->offer_by   = $_SESSION['userid'];
-
-   $page->check_offer_dates();
-   if ($page->success) {
-      $page->make_offer();
-   }
-}
-
-$page->output_begin();
-
-if (isset($_POST['offer_id'])) {
-   $page->displayStatus();
-}
+$page->beReady();
+$page->work();
 
 ?>
+
+<!doctype html>
+<?php $page->displayCopyright(); ?>
+<html>
+<head>
+ <title> <?php $page->displayTitle(); ?> </title>
+</head>
+<body>
+
+<?php $page->displayStatus(); ?>
 
 <div style="width: 80%;">
   <button class="menu">
@@ -156,10 +159,9 @@ if (isset($_POST['offer_id'])) {
 </div>
 
 <div>
- <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>"
-       method="post">
+ <form action="<?php $page->displaySelfURL(); ?>" method="post">
   <fieldset style="font-size: 1em;">
-    <legend> Make a Register Offer </legend>
+    <legend> Create Recharge Offer </legend>
       <p> <label for="off_id"> Offer ID </label>
           <input type="text" id="off_id" name="offer_id" maxlength="8"
                  size="8"
@@ -180,19 +182,19 @@ if (isset($_POST['offer_id'])) {
 
       <p> <label for="notes"> Reason for Cash Back </label>
           <input type="text" id="notes" name="reason"
-                 value="<?php echo $page->reason; ?>"
+                 value="<?php echo $page->notes; ?>"
                  size="40" maxlength="100"/>
       </p>
-    <input type="submit" id="do_offer" name="make_offer" value="Make An Offer"/>
+    <input type="submit" id="recharge_offer" name="recharge_offer"
+           value="Recharge Offer"/>
   </fieldset>
 </form>
 </div>
 
 <?php
-   $page->list_upcoming_offers();
+   $page->displayUpcomingOffers();
    $page->disconnect();
 ?>
 
 </body>
 </html>
-
