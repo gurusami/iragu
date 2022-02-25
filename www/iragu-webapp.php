@@ -95,6 +95,10 @@ EOF;
      echo $this->copyright_notice;
   }
 
+  public function getSelfURL() {
+     return htmlspecialchars($_SERVER["PHP_SELF"]);
+  }
+
   public function displaySelfURL() {
      echo htmlspecialchars($_SERVER["PHP_SELF"]);
   }
