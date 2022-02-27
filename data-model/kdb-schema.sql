@@ -115,12 +115,15 @@ DROP TABLE IF EXISTS `ir_court`;
 CREATE TABLE `ir_court` (
   `court_id` varchar(8) NOT NULL,
   `campus_id` varchar(8) NOT NULL,
-  `base_ppm` int NOT NULL,
+  `price_per_slot` int NOT NULL,
   `court_info` varchar(100) NOT NULL,
+  `added_by` varchar(8) NOT NULL,
   PRIMARY KEY (`court_id`),
   KEY `campus_id_valid` (`campus_id`),
+  KEY `added_by` (`added_by`),
   CONSTRAINT `campus_id_valid` FOREIGN KEY (`campus_id`) REFERENCES `ir_campus` (`campus_id`),
-  CONSTRAINT `ir_court_chk_1` CHECK ((`base_ppm` > 0))
+  CONSTRAINT `ir_court_ibfk_1` FOREIGN KEY (`added_by`) REFERENCES `ir_people` (`nick`),
+  CONSTRAINT `ir_court_chk_1` CHECK ((`price_per_slot` > 0))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -318,4 +321,4 @@ CREATE TABLE `ir_trace` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-02-27 20:08:07
+-- Dump completed on 2022-02-27 23:16:36

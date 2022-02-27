@@ -77,6 +77,12 @@ if (isset($_POST['username'])) {
 </div>
 
 <div style="width: 80%;">
+  <button class="menu">
+    <a href="05iradco.php">Add Court to Campus</a>
+  </button>
+</div>
+
+<div style="width: 80%;">
   <button class="menu"> <a href="logout.php">Logout</a> </button>
 </div>
 
