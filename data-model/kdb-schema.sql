@@ -98,7 +98,10 @@ CREATE TABLE `ir_campus` (
   `pincode` char(6) NOT NULL,
   `state_code` char(2) NOT NULL,
   `country_code` char(2) NOT NULL,
-  PRIMARY KEY (`campus_id`)
+  `added_by` varchar(8) DEFAULT NULL,
+  PRIMARY KEY (`campus_id`),
+  KEY `added_by` (`added_by`),
+  CONSTRAINT `ir_campus_ibfk_1` FOREIGN KEY (`added_by`) REFERENCES `ir_people` (`nick`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -290,6 +293,21 @@ CREATE TABLE `ir_register_offers` (
   CONSTRAINT `date_order` CHECK ((`offer_from` <= `offer_to`))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `ir_trace`
+--
+
+DROP TABLE IF EXISTS `ir_trace`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `ir_trace` (
+  `trace_id` bigint NOT NULL AUTO_INCREMENT,
+  `trace_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `trace_log` text NOT NULL,
+  PRIMARY KEY (`trace_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -300,4 +318,4 @@ CREATE TABLE `ir_register_offers` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-02-26 23:04:38
+-- Dump completed on 2022-02-27 20:08:07
