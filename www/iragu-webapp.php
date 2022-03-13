@@ -95,6 +95,18 @@ EOF;
      echo $this->copyright_notice;
   }
 
+  public function startTrx() {
+    $this->mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
+  }
+
+  public function commitTrx() {
+    $this->mysqli->commit();
+  }
+
+  public function rollbackTrx() {
+    $this->mysqli->rollback();
+  }
+
   public function getSelfURL() {
      return htmlspecialchars($_SERVER["PHP_SELF"]);
   }
