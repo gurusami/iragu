@@ -74,14 +74,17 @@ DROP TABLE IF EXISTS `ir_booking_slots`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `ir_booking_slots` (
+  `court_id` varchar(8) NOT NULL,
   `play_date` date NOT NULL,
   `play_slot` tinyint NOT NULL,
   `player_id` varchar(8) DEFAULT NULL,
-  PRIMARY KEY (`play_date`,`play_slot`),
-  KEY `player_id` (`player_id`),
-  CONSTRAINT `ir_booking_slots_ibfk_1` FOREIGN KEY (`play_date`) REFERENCES `ir_bookings_open` (`play_date`),
-  CONSTRAINT `ir_booking_slots_ibfk_2` FOREIGN KEY (`player_id`) REFERENCES `ir_people` (`nick`),
-  CONSTRAINT `ir_booking_slots_chk_1` CHECK (((`play_slot` > 0) and (`play_slot` < 97)))
+  PRIMARY KEY (`court_id`,`play_date`,`play_slot`),
+  KEY `play_date_open` (`play_date`),
+  KEY `valid_player` (`player_id`),
+  CONSTRAINT `play_date_open` FOREIGN KEY (`play_date`) REFERENCES `ir_bookings_open` (`play_date`),
+  CONSTRAINT `valid_court` FOREIGN KEY (`court_id`) REFERENCES `ir_court` (`court_id`),
+  CONSTRAINT `valid_player` FOREIGN KEY (`player_id`) REFERENCES `ir_people` (`nick`),
+  CONSTRAINT `valid_slot` CHECK (((`play_slot` > 0) and (`play_slot` < 97)))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -203,7 +206,7 @@ CREATE TABLE `ir_passbook` (
   KEY `recharge_id` (`recharge_id`),
   CONSTRAINT `ir_passbook_ibfk_1` FOREIGN KEY (`nick`) REFERENCES `ir_people` (`nick`),
   CONSTRAINT `ir_passbook_ibfk_2` FOREIGN KEY (`recharge_id`) REFERENCES `ir_recharge` (`recharge_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -269,7 +272,7 @@ CREATE TABLE `ir_recharge` (
   CONSTRAINT `ir_recharge_ibfk_3` FOREIGN KEY (`nick`) REFERENCES `ir_people` (`nick`),
   CONSTRAINT `ir_recharge_ibfk_4` FOREIGN KEY (`recharge_by`) REFERENCES `ir_people` (`nick`),
   CONSTRAINT `ir_recharge_ibfk_5` FOREIGN KEY (`pay_mode`) REFERENCES `ir_payment_mode` (`mode_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -342,4 +345,4 @@ CREATE TABLE `ir_trace` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-03-13 11:59:27
+-- Dump completed on 2022-03-15 20:36:14

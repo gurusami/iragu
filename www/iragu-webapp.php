@@ -48,6 +48,19 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 -->
 EOF;
 
+   public function isBookingOpen($court_id, $date_value) {
+        $query = "SELECT count(*) FROM ir_bookings_open WHERE " .
+                 "play_date = '$date_value'";
+        if ($result = $this->mysqli->query($query)) {
+           $row = $result->fetch_row();
+           $result->close();
+           $this->success = true;
+        } else {
+           $this->success = false;
+        }
+        return $row[0];
+   }
+
   public function connect() {
     $this->mysqli = mysqli_init();
 
@@ -62,6 +75,7 @@ EOF;
        die('Connect Error (' . mysqli_connect_errno() . ') '
             . mysqli_connect_error());
     }
+    $this->success = true;
   }
 
   public function is_user_authenticated() {

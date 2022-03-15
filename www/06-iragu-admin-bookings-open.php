@@ -25,20 +25,27 @@ include '01irglut.php';
 class IraguAdminOpenBookings extends IraguWebapp {
 
    public function insertSlots($offset) {
-      $query = <<<EOF
-INSERT INTO ir_booking_slots (play_date, play_slot) VALUES (CURRENT_DATE + ?, ?);
-EOF;
+      $query_court = "SELECT court_id from ir_court;";
+      $query = "INSERT INTO ir_booking_slots (court_id, play_date, play_slot) VALUES (?, CURRENT_DATE + ?, ?);";
       $stmt = $this->mysqli->prepare($query);
+      $court_id = '';
       $slot_no = 1;
-      $stmt->bind_param('ii', $offset, $slot_no);
-      while ($slot_no < 97) {
-         $this->success = $stmt->execute();
-         if (!$this->success) {
-            $this->errmsg = $this->errmsg . $stmt->error .
-               ' SLOT INSERTION FAILED';
-            break;
+      $stmt->bind_param('sii', $court_id, $offset, $slot_no);
+      $result = $this->mysqli->query($query_court);
+      while ($row = $result->fetch_row()) {
+         $court_id = $row[0];
+         $slot_no = 1;
+         while ($slot_no < 97) {
+             $this->success = $stmt->execute();
+             if (!$this->success) {
+                 $this->errmsg = $this->errmsg . $stmt->error .  ' SLOT INSERTION FAILED';
+                 break;
+             }
+             $slot_no++;
          }
-         $slot_no++;
+         if (!$this->success) {
+             break;
+         }
       }
       return $this->success;
    }
