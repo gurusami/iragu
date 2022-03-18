@@ -66,7 +66,7 @@ if (isset($_POST['username'])) {
 
 <div style="width: 80%;">
   <button class="menu">
-    <a href="03iradch.php">Recharge For Customer</a>
+    <a href="03-iragu-admin-recharge.php">Recharge For Customer</a>
   </button>
 </div>
 
@@ -91,6 +91,12 @@ if (isset($_POST['username'])) {
 <div style="width: 80%;">
   <button class="menu">
     <a href="07-iragu-check-availability.php">Check Availability</a>
+  </button>
+</div>
+
+<div style="width: 80%;">
+  <button class="menu">
+    <a href="08-iragu-admin-court-booking.php">Book Court (Admin)</a>
   </button>
 </div>
 
