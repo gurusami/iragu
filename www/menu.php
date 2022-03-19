@@ -54,7 +54,7 @@ if (isset($_POST['username'])) {
 
 <div style="width: 80%;">
   <button class="menu">
-    <a href="02iradro.php">Make Recharge Offer</a>
+    <a href="02-iragu-admin-offer-recharge.php">Make Recharge Offer</a>
   </button>
 </div>
 

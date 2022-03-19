@@ -99,8 +99,7 @@ function getTimeDisplay($begin_slot, $end_slot) {
    return "$from to $to";
 }
 
-function showOneBookableSlot($url, $begin_slot, $end_slot)
-{
+function showOneBookableSlot($url, $begin_slot, $end_slot) {
   $player_id = getPostAsHiddenInput('player_id');
   $court_id  = getPostAsHiddenInput('court_id');
   $play_date  = getPostAsHiddenInput('play_date');
@@ -118,7 +117,6 @@ echo <<<EOF
   $court_id
   $play_date
   $play_duration
-  $begin_slot_elem
   </form>
 </div>
 EOF;
@@ -251,6 +249,9 @@ EOF;
             . mysqli_connect_error());
     }
     $this->success = true;
+
+    $trace_insert = "INSERT INTO ir_trace (trace_log) VALUES (?)";
+    $trace_stmt = $this->mysqli->prepare($trace_insert);
   }
 
   public function is_user_authenticated() {
@@ -395,6 +396,17 @@ EOF;
                          $_POST['play_date'], $_POST['play_duration']);
     }
   }
-}
+
+  public function addComment($comment) {
+echo <<<EOF
+<!-- $comment -->
+EOF;
+  }
+
+  public function trace($log) {
+    $trace_stmt->bind_param('s', $log);
+    $trace_stmt->execute();
+  }
+} /* class IraguWebapp */
 
 ?>
