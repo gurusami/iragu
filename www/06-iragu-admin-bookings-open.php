@@ -20,7 +20,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 *******************************************************************************/
 /* Iragu: Admin Interface: Bookings: Open bookings for a day. */
 include 'iragu-webapp.php';
-include '01irglut.php';
+include '01-iragu-global-utility.php';
 
 class IraguAdminOpenBookings extends IraguWebapp {
 

@@ -27,7 +27,7 @@ if (!isset($_SESSION['userid'])) {
 }
 
 include 'iragu-webapp.php';
-include '01irglut.php';
+include '01-iragu-global-utility.php';
 
 class IraguMakeRegisterOffer extends IraguWebapp {
 

@@ -55,8 +55,9 @@ function showOneDuration($url, $slots) {
   $play_date  = getPostAsHiddenInput('play_date');
   $duration = getDurationString($slots);
 echo <<<EOF
-<div>
-  <form action=$url method="post">
+
+<div class="grid-item">
+  <form action="$url" method="post">
   <button>
     <p> $duration </p>
   </button>
@@ -65,7 +66,8 @@ echo <<<EOF
   $court_id 
   $play_date
   </form>
-</div>
+</div> <!-- grid-item -->
+
 EOF;
 }
 
@@ -106,7 +108,8 @@ function showOneBookableSlot($url, $begin_slot, $end_slot) {
   $play_duration  = getPostAsHiddenInput('play_duration');
   $slot_in_time = getTimeDisplay($begin_slot, $end_slot);
 echo <<<EOF
-<div>
+
+<div class="grid-item">
   <form action="$url" method="post">
   <button>
     <p> $slot_in_time </p>
@@ -118,7 +121,8 @@ echo <<<EOF
   $play_date
   $play_duration
   </form>
-</div>
+</div> <!-- grid-item -->
+
 EOF;
 }
 
@@ -145,7 +149,8 @@ function showOneDate($url, $row) {
   $player_id = getPostAsHiddenInput('player_id');
   $court_id  = getPostAsHiddenInput('court_id');
 echo <<<EOF
-<div>
+
+<div class="grid-item">
   <form action=$url method="post">
   <button>
     <p> $play_date </p>
@@ -154,7 +159,8 @@ echo <<<EOF
   $player_id
   $court_id 
   </form>
-</div>
+</div> <!-- grid-item -->
+
 EOF;
 }
 
@@ -164,8 +170,9 @@ function showOneCourt($url, $row) {
   $slot_price = $row['price_per_slot'];
   $player_id = getPostAsHiddenInput('player_id');
 echo <<<EOF
-<div>
-  <form action=$url method="post">
+
+<div class="grid-item">
+  <form action="$url" method="post">
   <button>
     <p> $court_id </p>
     <p> $campus_id </p>
@@ -174,7 +181,8 @@ echo <<<EOF
   <input type="hidden" name="court_id" value="$court_id">
   $player_id
   </form>
-</div>
+</div> <!-- grid-item -->
+
 EOF;
 }
 
@@ -183,16 +191,18 @@ function showOneUser($url, $row) {
   $full_name = $row['full_name'];
   $mobile_no = $row['mobile_no'];
 echo <<<EOF
-<div>
-  <form action=$url method="post">
-  <button>
+
+<div class="grid-item">
+  <form action="$url" method="post">
+   <button>
     <p> $nick </p>
     <p> $full_name </p>
     <p> $mobile_no </p>
-  </button>
+   </button>
   <input type="hidden" name="player_id" value="$nick">
   </form>
-</div>
+</div> <!-- grid-item -->
+
 EOF;
 }
 
@@ -335,7 +345,6 @@ EOF;
       echo "<p> Player ID: ", $_POST['player_id'], "</p>";
     } else {
       $url = $this->getSelfURL();
-      echo "<p> Choose Player ID </p>";
       $query = "SELECT nick, full_name, mobile_no FROM ir_people LIMIT 50";
       $result = $this->mysqli->query($query);
 
@@ -351,7 +360,6 @@ EOF;
       echo "<p> Court ID: ", $_POST['court_id'], "</p>";
     } else {
       $url = $this->getSelfURL();
-      echo "<p> Choose Court ID </p>";
       $query = "SELECT court_id, campus_id, price_per_slot FROM ir_court LIMIT 50";
       $result = $this->mysqli->query($query);
 
@@ -366,7 +374,6 @@ EOF;
       echo "<p> Play Date: ", $_POST['play_date'], "</p>";
     } else {
       $url = $this->getSelfURL();
-      echo "<p> Choose Play Date </p>";
       $query = "SELECT play_date FROM ir_bookings_open WHERE " .
                "play_date >= CURRENT_DATE";
       $result = $this->mysqli->query($query);

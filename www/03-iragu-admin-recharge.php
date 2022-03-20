@@ -20,7 +20,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 *******************************************************************************/
 /* Iragu: Admin Interface: Recharge: Recharge For a Customer  */
 include 'iragu-webapp.php';
-include '01irglut.php';
+include '01-iragu-global-utility.php';
 
 class IraguAdminCustomerRecharge extends IraguWebapp {
    public $nick     = "";

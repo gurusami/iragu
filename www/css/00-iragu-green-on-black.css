@@ -114,3 +114,10 @@ a {
   grid-template-columns: auto auto auto;
   padding: 5px;
 }
+
+button {
+  background-color: inherit;
+  border: none;
+  font-size: inherit;
+}
+

@@ -20,7 +20,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 *******************************************************************************/
 /* Iragu: Admin Interface: Add Campus: Add a campus */
 include 'iragu-webapp.php';
-include '01irglut.php';
+include '01-iragu-global-utility.php';
 
 class IraguAdminAddCampus extends IraguWebapp {
    public $campus_id = "";

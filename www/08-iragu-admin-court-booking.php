@@ -20,9 +20,11 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 *******************************************************************************/
 /* Iragu: Admin: Bookings: Court Booking. */
 include 'iragu-webapp.php';
-include '01irglut.php';
+include '01-iragu-global-utility.php';
 
 class IraguAdminCourtBooking extends IraguWebapp {
+   const BOOKING_COMPLETE = 1;
+
    public $player_id;
    public $court_id;
    public $play_date;
@@ -31,6 +33,57 @@ class IraguAdminCourtBooking extends IraguWebapp {
    public $end_slot;
    public $booking_cost;
    public $balance;
+   public $booking_id;
+   public $page_state;
+   public $booking_time;
+
+   public function getBookingTime() {
+     $query = <<<EOF
+SELECT booking_time FROM ir_booking WHERE booking_id = ?;
+EOF;
+     if (is_null($this->booking_id)) {
+        $this->success = false;
+        $this->errmsg .= ": BOOKING ID IS NULL";
+        return false;
+     }
+
+     $stmt = $this->mysqli->prepare($query);
+     $stmt->bind_param('i', $this->booking_id);
+     $this->success = $stmt->execute();
+     if (!$this->success) {
+        $this->errmsg .= ": Failed to obtain booking time: " . $stmt->error;
+        return false;
+     }
+     $result = $stmt->get_result();
+     if ($row = $result->fetch_array()) {
+        $this->booking_time = $row[0];
+     } else {
+        $this->success = false;
+        $this->errmsg .= ": FAILED TO FETCH BOOKING TIME";
+        return false;
+     }
+     $stmt->close();
+     return true;
+   }
+
+   public function insertBookingID() {
+     $query = <<<EOF
+INSERT INTO ir_booking (court_id, nick, play_date, from_slot, to_slot, price)
+VALUES (?, ?, ?, ?, ?, ?);
+EOF;
+     $stmt = $this->mysqli->prepare($query);
+     $stmt->bind_param('sssiii', $this->court_id, $this->player_id,
+                                 $this->play_date, $this->begin_slot,
+                                 $this->end_slot, $this->booking_cost);
+     $this->success = $stmt->execute();
+     if ($this->success) {
+        $this->booking_id = $this->mysqli->insert_id;
+     } else {
+        $this->errmsg .= ": FAILED TO OBTAIN BOOKING ID";
+     }
+     $stmt->close();
+     return $this->success;
+   }
 
    public function isDataComplete() {
       if (isset($_POST['player_id']) &&
@@ -47,14 +100,18 @@ class IraguAdminCourtBooking extends IraguWebapp {
 
    public function show() {
       $balance = paiseToRupees($this->balance);
+      $cost  = paiseToRupees($this->booking_cost);
       $show_time = getTimeDisplay($this->begin_slot, $this->end_slot);
 echo <<<EOF
 <div>
   <table>
+    <tr> <td> Booking ID </td> <td> $this->booking_id </td> </tr>
+    <tr> <td> Booking Time </td> <td> $this->booking_time </td> </tr>
     <tr> <td> Player ID </td> <td> $this->player_id </td> </tr>
     <tr> <td> Court ID </td> <td> $this->court_id </td> </tr>
     <tr> <td> Play Date </td> <td> $this->play_date </td> </tr>
     <tr> <td> Time </td> <td> $show_time </td> </tr>
+    <tr> <td> Booking Cost </td> <td> $cost </td> </tr>
     <tr> <td> Balance </td> <td> $balance </td> </tr>
   </table>
 </div>
@@ -242,6 +299,18 @@ EOF;
         $this->rollbackTrx();
         return false;
      }
+     $this->success = $this->insertBookingID();
+     if (!$this->success) {
+        $this->errmsg .= ": Getting Booking ID Failed";
+        $this->rollbackTrx();
+        return false;
+     }
+     $this->success = $this->getBookingTime();
+     if (!$this->success) {
+        $this->errmsg .= ": Getting Booking Time Failed";
+        $this->rollbackTrx();
+        return false;
+     }
      $this->commitTrx();
      return $this->success;
    }
@@ -257,6 +326,7 @@ EOF;
           } else {
               $this->errmsg .= ": BOOKING COURT FAILED";
           }
+         $this->page_state = IraguAdminCourtBooking::BOOKING_COMPLETE;
       }
    }
 }
@@ -270,14 +340,35 @@ $page->work();
 <!doctype html>
 <?php $page->displayCopyright(); ?>
 <html>
-<head>
- <title> <?php $page->displayTitle(); ?> </title>
-</head>
+
+<?php include '10-head.php'; ?>
+
 <body>
 
 <?php $page->displayStatus(); ?>
 
-<div style="width: 80%;">
+<?php
+   if (!isset($_POST['player_id'])) {
+      echo "<h1> Court Booking: Pick a User (Step 1/5) </h1>";
+   } else if (!isset($_POST['court_id'])) {
+      echo "<h1> Court Booking: Pick a Court (Step 2/5) </h1>";
+   } else if (!isset($_POST['play_date'])) {
+      echo "<h1> Court Booking: Pick a Date (Step 3/5) </h1>";
+   } else if (!isset($_POST['play_duration'])) {
+      echo "<h1> Court Booking: Pick a Duration (Step 4/5) </h1>";
+   } else if (!isset($_POST['begin_slot'])) {
+      echo "<h1> Court Booking: Pick a Slot (Step 5/5) </h1>";
+   } else {
+      /* Now we have all the information necessary to book the court. */
+      if ($page->success) {
+      echo "<h1> Booking Complete </h1>";
+      }
+   }
+
+?>
+
+<div class="grid-container">
+<div class="grid-item">
   <button class="menu">
     <a href="menu.php">Menu</a>
   </button>
@@ -297,16 +388,18 @@ $page->work();
    } else if (!isset($_POST['begin_slot'])) {
       $page->pickSlots();
    } else {
-      /* Now we have all the information necessary to book the court. */
-      if ($page->success) {
-         $page->show();
-      }
    }
    $page->disconnect();
 ?>
 
+</div> <!-- grid-container -->
+
+<?php
+if ($page->page_state == IraguAdminCourtBooking::BOOKING_COMPLETE) {
+   $page->show();
+}
+?>
+
 </body>
 </html>
-
-
 

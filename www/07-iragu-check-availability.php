@@ -20,7 +20,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 *******************************************************************************/
 /* Iragu: Bookings: Check Availability. */
 include 'iragu-webapp.php';
-include '01irglut.php';
+include '01-iragu-global-utility.php';
 
 function showFormToPickDate($url, $date_value, $court_id, $campus_id,
                             $date_offset) {

@@ -20,7 +20,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 *******************************************************************************/
 /* Iragu: Admin Interface: Register: Register a customer and/or player */
 include 'iragu-webapp.php';
-include '01irglut.php';
+include '01-iragu-global-utility.php';
 
 /** The class that is used to register a customer by an admin. */
 class IraguAdminRegister extends IraguWebapp {
