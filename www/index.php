@@ -71,9 +71,7 @@ if (isset($_POST['username'])) {
 <?php include 'copyright.php'; ?>
 
 <html>
-<head>
- <title> Iragu: Badminton Court Management Software </title>
-</head>
+<?php include '10-head.php'; ?>
 
 <body>
 
@@ -84,17 +82,14 @@ if (isset($_POST['username'])) {
 }
 ?>
 
-<div>
+<div id="login">
  <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>"
        method="post">
-  <table>
-    <tr> <td> Username: </td> <td> <input type="text" name="username"
-         maxlength="8"/> </td> </tr>
-    <tr> <td> Password: </td> <td> <input type="password" name="token"
-         maxlength="30"/> </td> </tr>
-    <tr> <td colspan="2"> <input type="submit" name="login" value="Sign In" />
-         </td> </tr>
-  </table>
+  <label> Username </label>
+  <input type="text" name="username" maxlength="8"/>
+  <label> Password </label>
+  <input type="password" name="token" maxlength="30"/> 
+  <input type="submit" name="login" value="Sign In" />
  </form>
 </div>
 </body>

@@ -1,0 +1,116 @@
+:root {
+  --hue: 120; /* Green */
+  --background: black;
+  --text-color: hsl(var(--hue), 100%, 30%);
+}
+
+html {
+  background-color: var(--background);
+  color: var(--text-color);
+  font-size: 2vw;
+}
+
+body {
+  font-size: 2vw;
+}
+
+label {
+}
+
+input {
+  background-color: hsl(var(--hue), 35%, 85%, 1);
+  font-size: 2vw;
+}
+
+input[type=text] {
+  width: 100%;
+  border: 1px solid green;
+  border-radius: 2px;
+  outline: none;
+  font-size: 2vw;
+  padding: 12px 20px;
+  display: inline-block;
+  box-sizing: border-box;
+}
+
+input[type=text]:focus {
+  outline: none;
+}
+
+input[type = password] {
+  width: 100%;
+  outline: none;
+  border: 2px solid green;
+  border-radius: 1px;
+  font-size: 2vw;
+  margin: 2px 2px;
+  padding: 12px 20px;
+  display: inline-block;
+  box-sizing: border-box;
+}
+
+input[type = submit] {
+  width: 100%;
+  background-color: var(--text-color);
+  color: var(--background);
+  border: none;
+  text-decoration: none;
+  padding: 14px 20px;
+  margin: 20px 0;
+  cursor: pointer;
+  font-size: 1.5vw;
+  border-radius: 4px;
+}
+
+input[type = submit]:hover {
+  background-color: green;
+}
+
+a {
+  color: inherit;
+}
+
+#login {
+  width: 60vw;
+  width: 60vh;
+  margin: 20vh auto;
+  border: 1px solid green;
+  border-radius: 5px;
+  padding: 20px;
+}
+
+.grid-item {
+  background-color: hsl(var(--hue), 35%, 75%, 1);
+  float: left;
+  margin: 10px;
+  padding: 10px;
+  font-size: 2vw;
+  text-align: center;
+}
+
+.grid-item:hover {
+  background-color: green;
+  color: hsl(var(--hue), 35%, 75%, 1);
+  cursor: pointer;
+}
+
+.menu {
+  background-color: inherit;
+  color: inherit;
+  border: none;
+  padding: 10px;
+  margin: 10px;
+  font-size: 2vw;
+  text-align: center;
+}
+
+.menu:hover {
+  background-color: inherit;
+  color: inherit;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: auto auto auto;
+  padding: 5px;
+}

@@ -31,11 +31,8 @@ $page->is_user_authenticated();
 <!doctype html>
 
 <?php include 'copyright.php'; ?>
-
 <html>
-<head>
- <title> <?php $page->displayTitle(); ?> </title>
-</head>
+<?php include '10-head.php'; ?>
 
 <body>
 
@@ -46,63 +43,48 @@ if (isset($_POST['username'])) {
 }
 ?>
 
-<div style="width: 80%;">
-  <button class="menu">
-    <a href="make-register-offer.php">Make a registration offer</a>
-  </button>
+<div class="grid-container">
+<div class="grid-item">
+  <a href="make-register-offer.php">Make a registration offer</a>
 </div>
 
-<div style="width: 80%;">
-  <button class="menu">
-    <a href="02-iragu-admin-offer-recharge.php">Make Recharge Offer</a>
-  </button>
+<div class="grid-item">
+  <a href="02-iragu-admin-offer-recharge.php">Make Recharge Offer</a>
 </div>
 
-<div style="width: 80%;">
-  <button class="menu">
-    <a href="00iradre.php">Register a Customer</a>
-  </button>
+<div class="grid-item">
+  <a href="00iradre.php">Register a Customer</a>
 </div>
 
-<div style="width: 80%;">
-  <button class="menu">
-    <a href="03-iragu-admin-recharge.php">Recharge For Customer</a>
-  </button>
+<div class="grid-item">
+  <a href="03-iragu-admin-recharge.php">Recharge For Customer</a>
 </div>
 
-<div style="width: 80%;">
-  <button class="menu">
-    <a href="04-iragu-admin-add-campus.php">Add a Campus</a>
-  </button>
+<div class="grid-item">
+  <a href="04-iragu-admin-add-campus.php">Add a Campus</a>
 </div>
 
-<div style="width: 80%;">
-  <button class="menu">
-    <a href="05-iragu-admin-court-add.php">Add Court to Campus</a>
-  </button>
+<div class="grid-item">
+  <a href="05-iragu-admin-court-add.php">Add Court to Campus</a>
 </div>
 
-<div style="width: 80%;">
-  <button class="menu">
-    <a href="06-iragu-admin-bookings-open.php">Open Bookings</a>
-  </button>
+<div class="grid-item">
+  <a href="06-iragu-admin-bookings-open.php">Open Bookings</a>
 </div>
 
-<div style="width: 80%;">
-  <button class="menu">
-    <a href="07-iragu-check-availability.php">Check Availability</a>
-  </button>
+<div class="grid-item">
+  <a href="07-iragu-check-availability.php">Check Availability</a>
 </div>
 
-<div style="width: 80%;">
-  <button class="menu">
-    <a href="08-iragu-admin-court-booking.php">Book Court (Admin)</a>
-  </button>
+<div class="grid-item">
+  <a href="08-iragu-admin-court-booking.php">Book Court (Admin)</a>
 </div>
 
-<div style="width: 80%;">
-  <button class="menu"> <a href="logout.php">Logout</a> </button>
+<div class="grid-item">
+  <a href="logout.php">Logout</a>
 </div>
+
+</div> <!-- class="grid-container" -->
 
 </body>
 </html>
