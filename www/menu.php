@@ -53,7 +53,7 @@ if (isset($_POST['username'])) {
 </div>
 
 <div class="grid-item">
-  <a href="00iradre.php">Register a Customer</a>
+  <a href="00-iragu-admin-register-customer.php">Register a Customer</a>
 </div>
 
 <div class="grid-item">

@@ -33,6 +33,8 @@ class IraguAdminCustomerRecharge extends IraguWebapp {
    public $notes       = "";
    public $recharge_by    = "";
    public $pay_mode    = "";
+   public $balance;
+   public $recharge_id;
 
    public function displayConfirmation() {
       if ($this->success) {
@@ -51,7 +53,7 @@ class IraguAdminCustomerRecharge extends IraguWebapp {
    <input type="hidden" id="nick" name="nick" value="$this->nick">
    <input type="hidden" id="offer_id" name="offer_id" value="$this->offer_id">
    <input type="hidden" id="pay_mode" name="pay_mode" value="$this->pay_mode">
-   <input type="submit" id="recharge" name="recharge" value="Recharge">
+   <input type="submit" id="recharge" name="recharge" value="Confirm Payment">
  </form>
 </div>
 EOF;
@@ -67,21 +69,32 @@ EOF;
                                 $_POST['pay_notes'],
                                 $_SESSION['userid']);
      $this->success = $stmt->execute();
-     if (!$this->success) {
+     if ($this->success) {
+        $this->recharge_id = $this->mysqli->insert_id;
+     } else {
         $this->errmsg = $stmt->error;
      }
      return $this->success;
    }
 
-   public function insert_into_passbook() {
-     $total = $this->recharge_amount  + $this->cashback;
-     $rid = $this->mysqli->insert_id;
-     $query = "INSERT INTO ir_passbook (nick, trx_info, trx_amount, " .
-              " recharge_id) VALUES (?, ?, ?, ?)";
+   public function giveCashback() {
+      $this->pay_notes = "Cashback for Recharge Id: " . $this->recharge_id;
+      if ($this->updateBalanceCashback() && $this->getBalance() &&
+          $this->cashbackPassbookEntry()) {
+        return true;
+      }
+      return false;
+   }
+
+   public function cashbackPassbookEntry() {
+     $query = "INSERT INTO ir_passbook (nick, trx_info, credit, running_total, " .
+              " recharge_id) VALUES (?, ?, ?, ?, ?)";
      $stmt = $this->mysqli->prepare($query);
-     $stmt->bind_param('sssi', $_POST['nick'],
+     $stmt->bind_param('ssiis', $_POST['nick'],
                                $this->pay_notes,
-                               $total, $rid);
+                               $this->cashback,
+                               $this->balance,
+                               $this->recharge_id);
      $this->success = $stmt->execute();
      if (!$this->success) {
         $this->errmsg = $stmt->error;
@@ -89,12 +102,67 @@ EOF;
      return $this->success;
    }
 
-   public function updateBalance() {
-     $total = $this->recharge_amount  + $this->cashback;
+   public function insert_into_passbook() {
+     $this->pay_notes = "Recharge with Offer Id: " . $this->offer_id;
+     $query = "INSERT INTO ir_passbook (nick, trx_info, credit, running_total, " .
+              " recharge_id) VALUES (?, ?, ?, ?, ?)";
+     $stmt = $this->mysqli->prepare($query);
+     $stmt->bind_param('ssiis', $_POST['nick'],
+                               $this->pay_notes,
+                               $this->recharge_amount,
+                               $this->balance,
+                               $this->recharge_id);
+     $this->success = $stmt->execute();
+     if (!$this->success) {
+        $this->errmsg = $stmt->error;
+     }
+     return $this->success;
+   }
+
+   public function getBalance() {
+     $query = <<<EOF
+SELECT balance FROM ir_balance WHERE nick = ?;
+EOF;
+     $stmt = $this->mysqli->prepare($query);
+     $stmt->bind_param('s', $_POST['nick']);
+     $this->success = $stmt->execute();
+     if (!$this->success) {
+        $this->errmsg = $this->errmsg . ": Failed to get balance.";
+        return false;
+     }
+     $result = $stmt->get_result();
+     if ($row = $result->fetch_array()) {
+        $this->balance = $row[0];
+        if (is_null($this->balance)) {
+          $this->success = false;
+          $this->errmsg = "Failed to get balance information";
+          return false;
+        }
+     } else {
+        $this->success = false;
+        $this->errmsg .= $stmt->error . " MISSING DATA";
+        return false;
+     }
+     $stmt->close();
+     return true;
+   }
+
+   public function updateBalanceCashback() {
+     $query = "UPDATE ir_balance SET balance = balance + ? WHERE nick = ?";
+     $stmt = $this->mysqli->prepare($query);
+     $stmt->bind_param('is', $this->cashback, $_POST['nick']);
+     $this->success = $stmt->execute();
+     if (!$this->success) {
+        $this->errmsg = $stmt->error;
+     }
+     return $this->success;
+   }
+
+   public function updateBalanceRechargeAmount() {
      $info = "Recharge Id: " . $this->mysqli->insert_id;
      $query = "UPDATE ir_balance SET balance = balance + ? WHERE nick = ?";
      $stmt = $this->mysqli->prepare($query);
-     $stmt->bind_param('is', $total, $_POST['nick']);
+     $stmt->bind_param('is', $this->recharge_amount, $_POST['nick']);
      $this->success = $stmt->execute();
      if (!$this->success) {
         $this->errmsg = $stmt->error;
@@ -108,8 +176,10 @@ EOF;
      /* Update the ir_balance table */
      $this->mysqli->begin_transaction();
      if ($this->insert_into_recharge_table()
+         && $this->updateBalanceRechargeAmount()
+         && $this->getBalance()
          && $this->insert_into_passbook()
-         && $this->updateBalance()) {
+         && $this->giveCashback()) {
         $this->mysqli->commit();
         $this->success = TRUE;
      } else {

@@ -48,7 +48,7 @@ DROP TABLE IF EXISTS `ir_booking`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `ir_booking` (
-  `booking_id` bigint NOT NULL,
+  `booking_id` bigint NOT NULL AUTO_INCREMENT,
   `court_id` varchar(8) NOT NULL,
   `nick` varchar(8) NOT NULL,
   `booking_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -63,7 +63,7 @@ CREATE TABLE `ir_booking` (
   CONSTRAINT `court_valid` FOREIGN KEY (`court_id`) REFERENCES `ir_court` (`court_id`),
   CONSTRAINT `ir_booking_ibfk_1` FOREIGN KEY (`nick`) REFERENCES `ir_people` (`nick`),
   CONSTRAINT `offer_valid` FOREIGN KEY (`court_id`, `offer_id`) REFERENCES `ir_court_offers` (`court_id`, `offer_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -199,14 +199,19 @@ CREATE TABLE `ir_passbook` (
   `nick` varchar(8) NOT NULL,
   `trx_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `trx_info` varchar(64) NOT NULL,
-  `trx_amount` int NOT NULL,
+  `credit` int DEFAULT NULL,
+  `debit` int DEFAULT NULL,
+  `running_total` int NOT NULL,
   `recharge_id` bigint DEFAULT NULL,
+  `booking_id` bigint DEFAULT NULL,
   PRIMARY KEY (`trx_id`),
   KEY `nick` (`nick`),
   KEY `recharge_id` (`recharge_id`),
+  KEY `booking_id` (`booking_id`),
   CONSTRAINT `ir_passbook_ibfk_1` FOREIGN KEY (`nick`) REFERENCES `ir_people` (`nick`),
-  CONSTRAINT `ir_passbook_ibfk_2` FOREIGN KEY (`recharge_id`) REFERENCES `ir_recharge` (`recharge_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  CONSTRAINT `ir_passbook_ibfk_2` FOREIGN KEY (`recharge_id`) REFERENCES `ir_recharge` (`recharge_id`),
+  CONSTRAINT `ir_passbook_ibfk_3` FOREIGN KEY (`booking_id`) REFERENCES `ir_booking` (`booking_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=44 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -272,7 +277,7 @@ CREATE TABLE `ir_recharge` (
   CONSTRAINT `ir_recharge_ibfk_3` FOREIGN KEY (`nick`) REFERENCES `ir_people` (`nick`),
   CONSTRAINT `ir_recharge_ibfk_4` FOREIGN KEY (`recharge_by`) REFERENCES `ir_people` (`nick`),
   CONSTRAINT `ir_recharge_ibfk_5` FOREIGN KEY (`pay_mode`) REFERENCES `ir_payment_mode` (`mode_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -345,4 +350,4 @@ CREATE TABLE `ir_trace` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-03-15 20:36:14
+-- Dump completed on 2022-03-26 10:10:14

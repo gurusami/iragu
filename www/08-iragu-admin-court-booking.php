@@ -37,6 +37,26 @@ class IraguAdminCourtBooking extends IraguWebapp {
    public $page_state;
    public $booking_time;
 
+   public function addPassbookEntries() {
+     $info = "Court Booking: $this->court_id ";
+     $query = <<<EOF
+INSERT INTO ir_passbook (nick, trx_info, debit, running_total, booking_id)
+VALUES (?, ?, ?, ?, ?);
+EOF;
+     $stmt = $this->mysqli->prepare($query);
+     $stmt->bind_param('ssiii', $this->player_id,
+                                $info,
+                                $this->booking_cost,
+                                $this->balance,
+                                $this->booking_id);
+     $this->success = $stmt->execute();
+     if (!$this->success) {
+        $this->errmsg .= ": Failed to add passbook entries: " . $stmt->error;
+        return false;
+     }
+     return true;
+   }
+
    public function getBookingTime() {
      $query = <<<EOF
 SELECT booking_time FROM ir_booking WHERE booking_id = ?;
@@ -308,6 +328,12 @@ EOF;
      $this->success = $this->getBookingTime();
      if (!$this->success) {
         $this->errmsg .= ": Getting Booking Time Failed";
+        $this->rollbackTrx();
+        return false;
+     }
+     $this->success = $this->addPassbookEntries();
+     if (!$this->success) {
+        $this->errmsg .= ": Adding passbook entries failed";
         $this->rollbackTrx();
         return false;
      }
