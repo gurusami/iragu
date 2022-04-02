@@ -1,7 +1,7 @@
 :root {
   --hue: 120; /* Green */
   --background: black;
-  --text-color: hsl(var(--hue), 100%, 30%);
+  --text-color: MediumSpringGreen;
 }
 
 html {
@@ -12,13 +12,16 @@ html {
 
 body {
   font-size: 2vw;
+  color: var(--text-color);
 }
 
 label {
+  color: var(--text-color);
 }
 
 input {
-  background-color: hsl(var(--hue), 35%, 85%, 1);
+  /* background-color: hsl(var(--hue), 35%, 85%, 1); */
+  background-color: grey;
   font-size: 2vw;
 }
 
@@ -80,7 +83,8 @@ a {
 }
 
 .grid-item {
-  background-color: hsl(var(--hue), 35%, 75%, 1);
+  /* background-color: hsl(var(--hue), 35%, 75%, 1); */
+  background-color: grey;
   float: left;
   margin: 10px;
   padding: 10px;

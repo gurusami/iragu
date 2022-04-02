@@ -31,8 +31,8 @@ class IraguAdminRegister extends IraguWebapp {
    public $mobile = "";
    public $aadhar = "";
    public $dob = "";
-   public $offer_id = "";
-   public $offer_cashback = "";
+   public $offer_id;
+   public $offer_cashback;
    public $registered_by = "";
 
    public function displayDisabled() {
@@ -81,18 +81,27 @@ EOF;
 
    public function addPassbookEntry() {
       $query = <<<EOF
-INSERT INTO ir_passbook (nick, trx_amount, trx_info) VALUES (?, ?, ?);
+INSERT INTO ir_passbook (nick, credit, trx_info, running_total) VALUES (?, ?, ?, ?);
 EOF;
       $entry = "Registration incentive";
-      $stmt = $this->mysqli->prepare($query);
-      $stmt->bind_param('sis', $this->player_id, $this->offer_cashback, $entry);
-      $this->success = $stmt->execute();
-      if (!$this->success) {
-         $this->errmsg = $stmt->error . ' Add passbook failed Player=' .
-                         $this->player_id . ', Cashback=' .
-                         $this->offer_cashback . ', ' . $entry;
+      if ($stmt = $this->mysqli->prepare($query)) {
+         /* Just now the user is being registered.  So running_total will be
+         equal to the cashback. */
+         $stmt->bind_param('sisi', $this->player_id,
+                                   $this->offer_cashback,
+                                   $entry,
+                                   $this->offer_cashback);
+         $this->success = $stmt->execute();
+         if (!$this->success) {
+            $this->errmsg = $stmt->error . ' Add passbook failed Player=' .
+                            $this->player_id . ', Cashback=' .
+                            $this->offer_cashback . ', ' . $entry;
+         }
+         $stmt->close();
+      } else {
+         $this->success = FALSE;
+         $this->errmsg = $this->mysqli->error;
       }
-      $stmt->close();
       return $this->success;
    }
 
@@ -134,22 +143,25 @@ EOF;
    }
 
    public function work() {
-      if (!$this->is_form_submitted()) {
-         return TRUE;
-      }
-      /* Form is being submitted. */
-      $this->player_id     = trim($_POST['player_id']);
-      $this->player_name   = $_POST['player_name'];
-      $this->gender        = $_POST['gender'];
-      $this->email         = $_POST['email'];
-      $this->mobile        = $_POST['mobile'];
-      $this->aadhar        = $_POST['aadhar'];
-      $this->dob           = $_POST['dob'];
-      $this->registered_by = $_SESSION['userid'];
-
       $this->connect();
-      $this->getOfferDetails();
-      $this->store();
+
+      if (is_null($this->offer_id) || is_null($this->offer_cash)) {
+         /* $this->offer_id and $this->offer_cashback is set here. */
+         $this->getOfferDetails();
+      }
+
+      if ($this->is_form_submitted()) {
+         /* Form is being submitted. */
+         $this->player_id      = trim($_POST['player_id']);
+         $this->player_name    = $_POST['player_name'];
+         $this->gender         = $_POST['gender'];
+         $this->email          = $_POST['email'];
+         $this->mobile         = $_POST['mobile'];
+         $this->aadhar         = $_POST['aadhar'];
+         $this->dob            = $_POST['dob'];
+         $this->registered_by  = $_SESSION['userid'];
+         $this->store();
+      }
       $this->disconnect();
    }
 }
@@ -162,9 +174,7 @@ $page->work();
 <!doctype html>
 <?php $page->displayCopyright(); ?>
 <html>
-<head>
- <title> <?php $page->displayTitle(); ?> </title>
-</head>
+<?php include '10-head.php'; ?>
 <body>
 
 <?php $page->displayStatus(); ?>
@@ -175,12 +185,13 @@ $page->work();
   </button>
 </div>
 
-<div>
+<div style="width: 80%;">
  <form action="<?php $page->displaySelfURL(); ?>" method="post">
   <fieldset style="font-size: 1em;">
     <legend> Register A Player </legend>
-      <p> <label for="player_id"> Player ID </label>
-          <input type="text" id="player_id" name="player_id" maxlength="8"
+      <p> <label style="color: mediumspringgreen;" for="player_id"> Player ID </label>
+          <input style="background-color: grey;"
+                 type="text" id="player_id" name="player_id" maxlength="8"
                  size="8"
                  value="<?php echo $page->player_id; ?>"/>
       </p>
