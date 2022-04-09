@@ -338,6 +338,9 @@ EOF;
   public function work() {
   }
 
+/******************************************************************************/
+/** TABLE: ir_people */
+
   /** Pick a user/player on behalf of whom an operation is being done. */
   public function pickUser() {
     if (isset($_POST['player_id'])) {
@@ -353,6 +356,181 @@ EOF;
       }
     }
   }
+
+  /** Insert a record into the ir_people table. */
+  public function insertPeople() {
+    if (!isset($_POST['player_id'])) {
+      $this->errmsg = "Player ID is not set";
+      $this->success = FALSE;
+      return FALSE;
+    }
+    if (!isset($_POST['player_name'])) {
+      $this->errmsg = "Player name is not set";
+      $this->success = FALSE;
+      return FALSE;
+    }
+    if (!isset($_POST['email'])) {
+      $this->errmsg = "Email address is not available.";
+      $this->success = FALSE;
+      return FALSE;
+    }
+    if (!isset($_POST['mobile_no'])) {
+      $this->errmsg = "Mobile phone number is not available.";
+      $this->success = FALSE;
+      return FALSE;
+    }
+    if (!isset($_POST['offer_id'])) {
+       /* It is not a problem if offer_id is missing.  It simply means, there
+       were no offers available at the time of registration. */
+    }
+
+    $query = "INSERT INTO ir_people (nick, full_name, email, mobile_no, " .
+             "offer_id, registered_by) VALUES (LOWER(TRIM(?)), ?, ?, ?, ?, ?)";
+
+    if (($stmt = $this->mysqli->prepare($query)) == FALSE) {
+      $this->errmsg = $this->mysqli->error;
+      $this->success = FALSE;
+      return FALSE;
+    }
+
+    if ($stmt->bind_param('ssssss', $_POST['player_id'],
+                                   $_POST['player_name'],
+                                   $_POST['email'],
+                                   $_POST['mobile_no'],
+                                   $_POST['offer_id'],
+                                   $_POST['player_id']) == FALSE) {
+      $stmt->close();
+      $this->errmsg = $this->mysqli->error;
+      $this->success = FALSE;
+      return FALSE;
+    }
+
+    if ($stmt->execute() == FALSE) {
+      $stmt->close();
+      $this->errmsg .= $this->mysqli->error;
+      $this->errmsg .= "Iragu: insertPeople() FAILED";
+      $this->success = FALSE;
+      return FALSE;
+    }
+
+    return TRUE;
+  }
+
+/******************************************************************************/
+/** TABLE: ir_login */
+
+  public function tableLoginInsert() {
+     if (!isset($_POST['player_id'])) {
+        $this->errmsg .= "Player ID is not set";
+        return FALSE;
+     }
+     if (!isset($_POST['password_1'])) {
+        $this->errmsg .= "Password is not set";
+        return FALSE;
+     }
+     if (!isset($_POST['password_2'])) {
+        $this->errmsg .= "Confirmation password is not set";
+        return FALSE;
+     }
+     if (strcmp($_POST['password_1'], $_POST['password_2']) != 0) {
+        $this->errmsg .= "Passwords does not match";
+        return FALSE;
+     }
+
+     $query = "INSERT INTO ir_login (nick, token) VALUES (LOWER(TRIM(?)), " .
+              " sha2(?, 256))";
+
+     if (($stmt = $this->mysqli->prepare($query)) == FALSE) {
+        $this->errmsg .= $this->mysqli->error;
+        return FALSE;
+     }
+
+     if ($stmt->bind_param('ss', $_POST['player_id'], $_POST['password_1']) == FALSE) {
+        $this->errmsg .= $this->mysqli->error;
+        return FALSE;
+     }
+     if ($stmt->execute() == FALSE) {
+        $this->errmsg .= $this->mysqli->error;
+        $this->errmsg .= "Iragu: tableLoginInsert() FAILED";
+        return FALSE;
+     }
+     $stmt->close();
+     return TRUE;
+  }
+
+/******************************************************************************/
+/** TABLE: ir_passbook */
+
+   /** Add an entry to the table ir_passbook for a user while registering.
+   @return TRUE on success, FALSE on failure. */
+   public function tablePassbookRegister() {
+     if (!isset($_POST['player_id'])) {
+        $this->errmsg .= "Player ID is not set";
+        $this->success = FALSE;
+        return FALSE;
+     }
+     if (!isset($_POST['offer_cashback'])) {
+        $this->errmsg .= "Offer cashback is not set";
+        $this->success = FALSE;
+        return FALSE;
+     }
+
+     $trx_info = 'Cashback for Registering';
+     $query = "INSERT INTO ir_passbook (nick, trx_info, credit, running_total)"
+              . " VALUES (?, ?, ?, ?)";
+     if (($stmt = $this->mysqli->prepare($query)) == FALSE) {
+        $this->errmsg .= $this->mysqli->error;
+        $this->success = FALSE;
+        return FALSE;
+     }
+
+     if ($stmt->bind_param('ssii', $_POST['player_id'],
+                               $trx_info,
+                               $this->offer_cashback,
+                               $this->offer_cashback) == FALSE) {
+        $this->errmsg .= $this->mysqli->error;
+        $this->success = FALSE;
+        return FALSE;
+     }
+     $this->success = $stmt->execute();
+     if (!$this->success) {
+        $this->errmsg .= $stmt->error;
+        $this->errmsg .= "Iragu: tablePassbookRegister() FAILED";
+     }
+     $stmt->close();
+     return $this->success;
+   }
+
+/******************************************************************************/
+/** TABLE: ir_balance */
+
+   /** While registering insert a record into table ir_balance. */
+   public function tableBalanceRegister($player_id, $cashback) {
+      $query = "INSERT INTO ir_balance (nick, balance) VALUES (?, ?)";
+      if (($stmt = $this->mysqli->prepare($query)) == FALSE) {
+         $this->errmsg .= $this->mysqli->error;
+         $this->success = FALSE;
+         return FALSE;
+      }
+
+      if ($stmt->bind_param('si', $player_id, $cashback) == FALSE) {
+         $this->errmsg .= $this->mysqli->error;
+         $this->success = FALSE;
+         return FALSE;
+      }
+
+      if ($stmt->execute() == FALSE) {
+         $this->errmsg .= $this->mysqli->error;
+         $this->errmsg .= "Iragu: tableBalanceRegister() FAILED";
+         $this->success = FALSE;
+         return FALSE;
+      }
+
+      $stmt->close();
+      return TRUE;
+   }
+
+/******************************************************************************/
 
   public function pickCourt() {
     if (isset($_POST['court_id'])) {

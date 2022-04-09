@@ -1,17 +1,19 @@
 :root {
   --hue: 120; /* Green */
   --background: black;
+  --background-2: #181818;
   --text-color: MediumSpringGreen;
+  --FF: "Lucida Console", "Courier New", monospace;
+  font-size: 2em; 
 }
 
 html {
+  font-family: var(--FF);
   background-color: var(--background);
   color: var(--text-color);
-  font-size: 2vw;
 }
 
 body {
-  font-size: 2vw;
   color: var(--text-color);
 }
 
@@ -19,18 +21,20 @@ label {
   color: var(--text-color);
 }
 
+.form_label {
+  color: var(--text-color);
+}
+
 input {
-  /* background-color: hsl(var(--hue), 35%, 85%, 1); */
-  background-color: grey;
-  font-size: 2vw;
 }
 
 input[type=text] {
   width: 100%;
+  background-color: var(--background-2);
+  color: var(--text-color);
   border: 1px solid green;
   border-radius: 2px;
   outline: none;
-  font-size: 2vw;
   padding: 12px 20px;
   display: inline-block;
   box-sizing: border-box;
@@ -38,14 +42,17 @@ input[type=text] {
 
 input[type=text]:focus {
   outline: none;
+  background-color: var(--background-2);
+  color: var(--text-color);
 }
 
 input[type = password] {
   width: 100%;
+  background-color: var(--background-2);
+  color: var(--text-color);
   outline: none;
-  border: 2px solid green;
+  border: 1px solid green;
   border-radius: 1px;
-  font-size: 2vw;
   margin: 2px 2px;
   padding: 12px 20px;
   display: inline-block;
@@ -53,20 +60,20 @@ input[type = password] {
 }
 
 input[type = submit] {
+  font-family: var(--FF);
   width: 100%;
-  background-color: var(--text-color);
-  color: var(--background);
+  background-color: var(--background-2);
+  color: var(--text-color);
   border: none;
-  text-decoration: none;
   padding: 14px 20px;
   margin: 20px 0;
   cursor: pointer;
-  font-size: 1.5vw;
   border-radius: 4px;
 }
 
 input[type = submit]:hover {
-  background-color: green;
+  border: 1px solid green;
+  background-color: var(--background-2);
 }
 
 a {
@@ -79,7 +86,7 @@ a {
   margin: 20vh auto;
   border: 1px solid green;
   border-radius: 5px;
-  padding: 20px;
+  padding: 10px;
 }
 
 .grid-item {
@@ -88,7 +95,6 @@ a {
   float: left;
   margin: 10px;
   padding: 10px;
-  font-size: 2vw;
   text-align: center;
 }
 
@@ -104,7 +110,6 @@ a {
   border: none;
   padding: 10px;
   margin: 10px;
-  font-size: 2vw;
   text-align: center;
 }
 
@@ -122,6 +127,5 @@ a {
 button {
   background-color: inherit;
   border: none;
-  font-size: inherit;
 }
 

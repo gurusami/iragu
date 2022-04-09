@@ -180,10 +180,12 @@ DROP TABLE IF EXISTS `ir_login`;
 CREATE TABLE `ir_login` (
   `nick` varchar(8) NOT NULL,
   `token` char(64) NOT NULL,
-  `usertype` enum('CUSTOMER','SERVICE') DEFAULT 'CUSTOMER',
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `usertype` varchar(8) NOT NULL DEFAULT 'user',
   PRIMARY KEY (`nick`),
-  CONSTRAINT `ir_login_ibfk_1` FOREIGN KEY (`nick`) REFERENCES `ir_people` (`nick`)
+  KEY `usertype` (`usertype`),
+  CONSTRAINT `ir_login_ibfk_1` FOREIGN KEY (`nick`) REFERENCES `ir_people` (`nick`),
+  CONSTRAINT `ir_login_ibfk_2` FOREIGN KEY (`usertype`) REFERENCES `ir_user_types` (`user_type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -211,7 +213,7 @@ CREATE TABLE `ir_passbook` (
   CONSTRAINT `ir_passbook_ibfk_1` FOREIGN KEY (`nick`) REFERENCES `ir_people` (`nick`),
   CONSTRAINT `ir_passbook_ibfk_2` FOREIGN KEY (`recharge_id`) REFERENCES `ir_recharge` (`recharge_id`),
   CONSTRAINT `ir_passbook_ibfk_3` FOREIGN KEY (`booking_id`) REFERENCES `ir_booking` (`booking_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=44 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=46 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -246,6 +248,8 @@ CREATE TABLE `ir_people` (
   `offer_id` varchar(8) DEFAULT NULL,
   `registered_by` varchar(8) NOT NULL,
   PRIMARY KEY (`nick`),
+  UNIQUE KEY `key_email` (`email`),
+  UNIQUE KEY `key_mobile` (`mobile_no`),
   KEY `offer_id` (`offer_id`),
   KEY `registered_by` (`registered_by`),
   CONSTRAINT `ir_people_ibfk_1` FOREIGN KEY (`offer_id`) REFERENCES `ir_register_offers` (`offer_id`),
@@ -340,6 +344,19 @@ CREATE TABLE `ir_trace` (
   PRIMARY KEY (`trace_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `ir_user_types`
+--
+
+DROP TABLE IF EXISTS `ir_user_types`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `ir_user_types` (
+  `user_type` varchar(8) NOT NULL,
+  PRIMARY KEY (`user_type`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -350,4 +367,4 @@ CREATE TABLE `ir_trace` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-03-26 10:10:14
+-- Dump completed on 2022-04-09 23:05:38
