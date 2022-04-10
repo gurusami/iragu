@@ -20,12 +20,27 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 *******************************************************************************/
 include 'iragu-webapp.php';
 
+session_start();
+
+if (!isset($_SESSION['userid'])) {
+   header('Location: ' . 'index.php');
+   exit();
+}
+
+function isAuthorized() {
+   return (isset($_SESSION['usertype']) &&
+           strcmp($_SESSION['usertype'], "admin") == 0);
+}
+
+if (!isAuthorized()) {
+  echo 'Not Authorized';
+  exit();
+}
+
 class IraguMenu extends IraguWebapp {
 }
 
 $page = new IraguMenu();
-$page->is_user_authenticated();
-// $page->work();
 ?>
 
 <!doctype html>

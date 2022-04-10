@@ -18,15 +18,15 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 *******************************************************************************/
-/* Iragu: Template Page. */
+/* Iragu: User Menu Page. */
 
 include 'iragu-webapp.php';
 include '01-iragu-global-utility.php';
 
-class IraguPageTemplate extends IraguWebapp {
+class IraguPageUserMenu extends IraguWebapp {
 }
 
-$page = new IraguPageTemplate();
+$page = new IraguPageUserMenu();
 $page->is_user_authenticated();
 $page->connect();
 $page->work();
@@ -39,6 +39,8 @@ $page->work();
 <?php include '10-head.php'; ?>
 
 <body>
+
+Hello. User menu.
 
 <?php $page->displayStatus(); ?>
 

@@ -19,6 +19,24 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 *******************************************************************************/
 /* Iragu: Admin Interface: Bookings: Open bookings for a day. */
+
+session_start();
+
+if (!isset($_SESSION['userid'])) {
+   header('Location: ' . 'index.php');
+   exit();
+}
+
+function isAuthorized() {
+   return (isset($_SESSION['usertype']) &&
+           strcmp($_SESSION['usertype'], "admin") == 0);
+}
+
+if (!isAuthorized()) {
+  echo 'Not Authorized';
+  exit();
+}
+
 include 'iragu-webapp.php';
 include '01-iragu-global-utility.php';
 
@@ -126,7 +144,6 @@ EOF;
 }
 
 $page = new IraguAdminOpenBookings();
-$page->is_user_authenticated();
 $page->connect();
 $page->work();
 ?>
@@ -139,13 +156,9 @@ $page->work();
 </head>
 <body>
 
-<?php $page->displayStatus(); ?>
+<?php $page->displayStatus(); 
 
-<div style="width: 80%;">
-  <button class="menu">
-    <a href="menu.php">Menu</a>
-  </button>
-</div>
+include '14-iragu-top.php'; ?>
 
 <?php 
    for ($i = 0; $i < 10; $i++) {

@@ -133,13 +133,8 @@ $page->work();
 
 <body>
 
-<?php $page->displayStatus(); ?>
-
-<div style="width: 80%;">
-  <button class="menu">
-    <a href="menu.php">Menu</a>
-  </button>
-</div>
+<?php $page->displayStatus();
+include '14-iragu-top.php'; ?>
 
 <div id="div_signup"> 
  <form action="<?php $page->displaySelfURL(); ?>"

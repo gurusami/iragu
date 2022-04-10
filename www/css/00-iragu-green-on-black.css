@@ -90,8 +90,7 @@ a {
 }
 
 .grid-item {
-  /* background-color: hsl(var(--hue), 35%, 75%, 1); */
-  background-color: grey;
+  background-color: var(--background-2);
   float: left;
   margin: 10px;
   padding: 10px;

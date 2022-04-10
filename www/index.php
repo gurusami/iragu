@@ -27,17 +27,23 @@ class LoginPage extends IraguWebapp {
   public $pass;
 
   public function validate($user, $password) {
-    $stmt = $this->mysqli->prepare("SELECT sha2(?, 256) = token FROM " .
-       " ir_login WHERE nick = ?");
+    $query = "SELECT sha2(?, 256) = token, usertype FROM ir_login WHERE nick = ?";
+    if (($stmt = $this->mysqli->prepare($query)) == FALSE) {
+       $this->errmsg .= $this->mysqli->error;
+       $this->success = FALSE;
+       $this->pass = false;
+       return FALSE;
+    }
 
     $stmt->bind_param('ss', $password,  $user);
     $stmt->execute();
-    $stmt->bind_result($valid);
+    $stmt->bind_result($valid, $usertype);
     $stmt->fetch();
 
     if ($valid == 1) {
       $this->pass = true;
       $_SESSION['userid'] = $user;
+      $_SESSION['usertype'] = $usertype;
     } else {
       $this->pass = false;
     }
@@ -59,8 +65,13 @@ if (isset($_POST['username'])) {
 
    if ($page->pass) {
      /* Redirect browser */
-     header('Location: ' . 'menu.php');
+     if (strcmp($_SESSION['usertype'], "admin") == 0) {
+        header('Location: ' . '12-iragu-admin-menu.php');
+     } else {
+        header('Location: ' . '13-iragu-user-menu.php');
+     }
      exit();
+   
    }
 }
 

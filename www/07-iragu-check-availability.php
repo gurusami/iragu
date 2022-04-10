@@ -163,13 +163,9 @@ $page->work();
 </head>
 <body>
 
-<?php $page->displayStatus(); ?>
+<?php $page->displayStatus();
 
-<div style="width: 80%;">
-  <button class="menu">
-    <a href="menu.php">Menu</a>
-  </button>
-</div>
+include '14-iragu-top.php'; ?>
 
 <?php 
    $page->displayCourtSelect();

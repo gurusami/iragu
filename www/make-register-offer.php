@@ -26,6 +26,16 @@ if (!isset($_SESSION['userid'])) {
    exit();
 }
 
+function isAuthorized() {
+   return (isset($_SESSION['usertype']) &&
+           strcmp($_SESSION['usertype'], "admin") == 0);
+}
+
+if (!isAuthorized()) {
+  echo 'Not Authorized';
+  exit();
+}
+
 include 'iragu-webapp.php';
 include '01-iragu-global-utility.php';
 
@@ -140,20 +150,24 @@ if (isset($_POST['offer_id'])) {
       $page->make_offer();
    }
 }
+?>
 
-$page->output_begin();
+<!doctype html>
+
+<?php $page->displayCopyright(); ?>
+
+<html>
+<?php include '10-head.php'; ?>
+<body>
+
+<?php
 
 if (isset($_POST['offer_id'])) {
    $page->displayStatus();
 }
 
+include '14-iragu-top.php';
 ?>
-
-<div style="width: 80%;">
-  <button class="menu">
-    <a href="menu.php">Menu</a>
-  </button>
-</div>
 
 <div>
  <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>"

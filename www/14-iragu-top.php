@@ -18,30 +18,38 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 *******************************************************************************/
-/* Iragu: Template Page. */
+/* Iragu: Top */
 
-include 'iragu-webapp.php';
-include '01-iragu-global-utility.php';
+$menu = "";
 
-class IraguPageTemplate extends IraguWebapp {
+function showAdminMenu() {
+    $menu = <<<EOF
+<a href="12-iragu-admin-menu.php">Menu</a>
+EOF;
+EOF;
 }
 
-$page = new IraguPageTemplate();
-$page->is_user_authenticated();
-$page->connect();
-$page->work();
+function showUserMenu() {
+   $menu = <<<EOF
+    <a href="13-iragu-user-menu.php">Menu</a>
+EOF;
+}
+
+if (isset($_SESSION['userid'])) {
+   if (strcmp($_SESSION['usertype'],"admin") == 0) {
+      showAdminMenu();
+   } else {
+      showUserMenu();
+   }
+} else {
+    $menu = '<a href="index.php">Login</a>';
+}
+
 ?>
 
-<!doctype html>
-<?php $page->displayCopyright(); ?>
-<html>
-
-<?php include '10-head.php'; ?>
-
-<body>
-
-<?php $page->displayStatus(); ?>
-
-</body>
-</html>
+<div style="width: 80%;">
+  <button class="menu">
+    <?php echo $menu; ?>
+  </button>
+</div>
 

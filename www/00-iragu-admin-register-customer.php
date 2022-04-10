@@ -19,6 +19,24 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 *******************************************************************************/
 /* Iragu: Admin Interface: Register: Register a customer and/or player */
+
+session_start();
+
+if (!isset($_SESSION['userid'])) {
+   header('Location: ' . 'index.php');
+   exit();
+}
+
+function isAuthorized() {
+   return (isset($_SESSION['usertype']) &&
+           strcmp($_SESSION['usertype'], "admin") == 0);
+}
+
+if (!isAuthorized()) {
+  echo 'Not Authorized';
+  exit();
+}
+
 include 'iragu-webapp.php';
 include '01-iragu-global-utility.php';
 
@@ -167,7 +185,6 @@ EOF;
 }
 
 $page = new IraguAdminRegister();
-$page->is_user_authenticated();
 $page->work();
 ?>
 
@@ -179,11 +196,7 @@ $page->work();
 
 <?php $page->displayStatus(); ?>
 
-<div style="width: 80%;">
-  <button class="menu">
-    <a href="menu.php">Menu</a>
-  </button>
-</div>
+<?php include '14-iragu-top.php'; ?>
 
 <div style="width: 80%;">
  <form action="<?php $page->displaySelfURL(); ?>" method="post">
