@@ -1,4 +1,6 @@
 <?php
+namespace iragu;
+
 /*******************************************************************************
 Iragu: Badminton Court Management Software
 
@@ -169,17 +171,14 @@ $page->work();
 
 <!doctype html>
 <?php $page->displayCopyright(); ?>
-<html>
-<head>
- <title> <?php $page->displayTitle(); ?> </title>
-</head>
+<?php include '10-head.php'; ?>
 <body>
 
 <?php $page->displayStatus(); ?>
 
 <?php include '14-iragu-top.php'; ?>
 
-<div>
+<div style="margin: 10px; padding: 10px;">
  <form action="<?php $page->displaySelfURL(); ?>" method="post">
   <fieldset style="font-size: 1em;">
     <legend> Create Recharge Offer </legend>
@@ -196,13 +195,13 @@ $page->work();
           <input type="date" id="offer_to" name="offer_to"
                  value="<?php echo $page->offer_to; ?>" /> </p>
 
-      <p> <label for="recharge_amount"> Recharge Amount</label>
+      <p> <label for="recharge_amount"> Recharge Amount (in Rupees) </label>
           <input type="number" step="0.01" id="recharge_amount"
                  name="recharge_amount"
                  value="<?php displayInRupees($page->recharge_amount); ?>"/>
       </p>
 
-      <p> <label for="cash_back"> Cash Back </label>
+      <p> <label for="cash_back"> Cash Back (in Rupees) </label>
           <input type="number" step="0.01" id="cash_back" name="cash_back"
                  value="<?php displayInRupees($page->cashback); ?>"
                  maxlength="8"/> </p>

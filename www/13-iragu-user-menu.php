@@ -18,31 +18,61 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 *******************************************************************************/
-/* Iragu: User Menu Page. */
-
 include 'iragu-webapp.php';
-include '01-iragu-global-utility.php';
 
-class IraguPageUserMenu extends IraguWebapp {
+session_start();
+
+if (!isset($_SESSION['userid'])) {
+   header('Location: ' . 'index.php');
+   exit();
 }
 
-$page = new IraguPageUserMenu();
-$page->is_user_authenticated();
-$page->connect();
-$page->work();
+class IraguMenu extends iragu\IraguWebapp {
+}
+
+$page = new IraguMenu();
 ?>
 
 <!doctype html>
-<?php $page->displayCopyright(); ?>
-<html>
 
+<?php include 'copyright.php'; ?>
+<html>
 <?php include '10-head.php'; ?>
 
 <body>
 
-Hello. User menu.
+<?php include '14-iragu-top.php'; ?>
 
-<?php $page->displayStatus(); ?>
+<?php
+if (isset($_POST['username'])) {
+   $page->report_failure();
+   $page->disconnect();
+}
+?>
+
+<div class="grid-container">
+
+<div class="grid-item">
+  <a href="50-iragu-user-profile.php">Profile</a>
+</div>
+
+<div class="grid-item">
+  <a href="20-iragu-user-recharge.php">Recharge</a>
+</div>
+
+<div class="grid-item">
+  <a href="07-iragu-check-availability.php">Check Availability</a>
+</div>
+
+<div class="grid-item">
+  <a href="30-iragu-user-court-booking.php">Book Court</a>
+</div>
+
+<div class="grid-item">
+  <a href="logout.php">Logout</a>
+</div>
+
+</div> <!-- class="grid-container" -->
 
 </body>
 </html>

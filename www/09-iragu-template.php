@@ -40,6 +40,8 @@ $page->work();
 
 <body>
 
+<?php include '14-iragu-top.php'; ?>
+
 <?php $page->displayStatus(); ?>
 
 </body>

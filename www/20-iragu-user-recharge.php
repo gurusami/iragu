@@ -18,27 +18,35 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 *******************************************************************************/
-/* Iragu: Top */
+/* Iragu: All Users: Recharge Account */
 
-function getHomeLink() {
-   $menu = <<<EOF
-<a href="13-iragu-user-menu.php">Home</a>
-EOF;
-   if (strcmp($_SESSION['usertype'],"admin") == 0) {
-    $menu = <<<EOF
-<a href="12-iragu-admin-menu.php">Home</a>
-EOF;
-   }
-   return $menu;
+include 'iragu-webapp.php';
+include '01-iragu-global-utility.php';
+
+class IraguUserRecharge extends iragu\IraguWebapp {
 }
 
+$page = new IraguUserRecharge();
+$page->is_user_authenticated();
+$page->connect();
+$page->work();
 ?>
 
-<div style="width: 100%; border: 1px solid var(--text-color);">
-  <ul class="ul-top-menu">
-    <li class="li-top-menu"> <?php echo getHomeLink(); ?> </li>
-    <li class="li-top-menu"> User: <?php echo $_SESSION['userid']; ?> </li>
-    <li class="li-top-menu"> <a href="logout.php">Logout</a> </li>
-  </ul>
-</div>
+<!doctype html>
+<?php $page->displayCopyright(); ?>
+<html>
+
+<?php include '10-head.php'; ?>
+
+<body>
+
+<?php include '14-iragu-top.php'; ?>
+
+<?php
+  $page->displayStatus();
+  $page->displayRechargeOffers();
+?>
+
+</body>
+</html>
 

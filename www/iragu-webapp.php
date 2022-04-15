@@ -1,4 +1,6 @@
 <?php
+namespace iragu;
+
 /*******************************************************************************
 Iragu: Badminton Court Management Software
 
@@ -18,6 +20,52 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 *******************************************************************************/
+
+class IraguRechargeOffer {
+   public $offer_id;
+   public $offer_from;
+   public $offer_to;
+   public $amount;
+   public $cashback;
+};
+
+
+function getRechargeOffers($mysqli) {
+    $query = "SELECT offer_id, offer_from, offer_to, recharge_amount, " .
+        "cashback FROM ir_recharge_offers WHERE CURRENT_DATE BETWEEN " .
+        "offer_from AND offer_to ORDER BY offer_from;";
+    $offers = array();
+    $result = $mysqli->query($query);
+    while ($row = $result->fetch_object()) {
+        array_push($offers, $row);
+    }
+    return $offers;
+}
+
+function displayCurrentOffers($offers, $url) {
+     echo '<div class="grid-container">';
+     if (count($offers) == 0) {
+       echo '<p> Sorry, no recharge offers available. </p>';
+     } else {
+         foreach ($offers as $obj) {
+            $offer_id = $obj->offer_id;
+            $cashback = paiseToRupees($obj->cashback);
+            $recharge = paiseToRupees($obj->recharge_amount);
+echo <<<EOF
+<div class="grid-item">
+  <form action="$url" method="post">
+    <button>
+      <p> Offer ID: $offer_id </p>
+      <p> Recharge Amount: $recharge </p>
+      <p> Cashback: $cashback </p>
+    </button>
+  <input type="hidden" id="offer_id" name="offer_id" value="$offer_id">
+  </form>
+</div>
+EOF;
+         } /* foreach */
+     }
+}
 
 function echoTitle() {
    echo "Iragu: Badminton Court Management Software";
@@ -592,6 +640,12 @@ EOF;
     $trace_stmt->bind_param('s', $log);
     $trace_stmt->execute();
   }
+
+    public function displayRechargeOffers() {
+        $offers = getRechargeOffers($this->mysqli);
+        displayCurrentOffers($offers, $this->getSelfURL());
+    }
+
 } /* class IraguWebapp */
 
 ?>
