@@ -23,7 +23,53 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 include 'iragu-webapp.php';
 include '01-iragu-global-utility.php';
 
+function getRechargeOffers($mysqli) {
+    $query = "SELECT offer_id, offer_from, offer_to, recharge_amount, " .
+        "cashback FROM ir_recharge_offers WHERE CURRENT_DATE BETWEEN " .
+        "offer_from AND offer_to ORDER BY offer_from;";
+    $offers = array();
+    $result = $mysqli->query($query);
+    while ($row = $result->fetch_object()) {
+        array_push($offers, $row);
+    }
+    return $offers;
+}
+
+function displayCurrentOffers($offers, $url) {
+     echo '<div class="grid-container">';
+     if (count($offers) == 0) {
+       echo '<p> Sorry, no recharge offers available. </p>';
+     } else {
+         foreach ($offers as $obj) {
+            $offer_id = $obj->offer_id;
+            $recharge_paisa = $obj->recharge_amount;
+            $cashback = paiseToRupees($obj->cashback);
+            $recharge = paiseToRupees($obj->recharge_amount);
+echo <<<EOF
+<div class="grid-item">
+  <form action="$url" method="post">
+    <button class="button-grid-item">
+      <p> Offer ID: $offer_id </p>
+      <p> Recharge Amount: $recharge </p>
+      <p> Cashback: $cashback </p>
+     <input type="hidden" id="offer_id" name="offer_id" value="$offer_id">
+     <input type="hidden" id="recharge_amount" name="recharge_amount"
+        value="$recharge_paisa">
+    </button>
+  </form>
+</div>
+EOF;
+         } /* foreach */
+     }
+     echo '</div> <!-- grid-container -->';
+}
+
 class IraguUserRecharge extends iragu\IraguWebapp {
+    public function displayRechargeOffers() {
+        $url = "15-iragu-user-recharge-razorpay.php";
+        $offers = getRechargeOffers($this->mysqli);
+        displayCurrentOffers($offers, $url);
+    }
 }
 
 $page = new IraguUserRecharge();

@@ -89,18 +89,37 @@ a {
   padding: 10px;
 }
 
+.grid-container {
+  background-color: #202020;
+  display: grid;
+  grid-template-columns: auto auto auto;
+  padding: 5px;
+  margin-top: 10px;
+}
+
 .grid-item {
   background-color: var(--background-2);
+  color: var(--text-color);
   float: left;
-  margin: 10px;
-  padding: 10px;
+  margin: 0px;
+  padding: 0px;
   text-align: center;
 }
 
-.grid-item:hover {
-  background-color: green;
-  color: hsl(var(--hue), 35%, 75%, 1);
+.button-grid-item {
+  width: 100%;
+  font-family: var(--FF);
+  background-color: var(--background-2);
+  color: var(--text-color);
+  margin: 0px;
+  padding: 0px;
+  text-align: center;
   cursor: pointer;
+}
+
+.grid-item:hover {
+  cursor: pointer;
+  border: 1px solid var(--text-color);
 }
 
 .menu {
@@ -115,12 +134,6 @@ a {
 .menu:hover {
   background-color: inherit;
   color: inherit;
-}
-
-.grid-container {
-  display: grid;
-  grid-template-columns: auto auto auto;
-  padding: 5px;
 }
 
 button {
@@ -144,3 +157,10 @@ button {
   flex: 0 1 auto;
   list-style-type: none;
 }
+
+.recharge-div {
+  width: 80%;
+  margin-left: 10%;
+  background: var(--background-2);
+}
+
