@@ -64,7 +64,7 @@ EOF;
      echo '</div> <!-- grid-container -->';
 }
 
-class IraguUserRecharge extends iragu\IraguWebapp {
+class IraguUserRecharge extends IraguWebapp {
     public function displayRechargeOffers() {
         $url = "15-iragu-user-recharge-razorpay.php";
         $offers = getRechargeOffers($this->mysqli);

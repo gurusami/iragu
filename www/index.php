@@ -23,7 +23,7 @@ session_start();
 
 include 'iragu-webapp.php';
 
-class LoginPage extends iragu\IraguWebapp {
+class LoginPage extends IraguWebapp {
   public $pass;
 
   public function validate($user, $password) {

@@ -27,7 +27,7 @@ if (!isset($_SESSION['userid'])) {
    exit();
 }
 
-class IraguMenu extends iragu\IraguWebapp {
+class IraguMenu extends IraguWebapp {
 }
 
 $page = new IraguMenu();

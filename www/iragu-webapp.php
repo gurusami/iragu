@@ -1,6 +1,4 @@
 <?php
-namespace iragu;
-
 /*******************************************************************************
 Iragu: Badminton Court Management Software
 
@@ -613,7 +611,6 @@ EOF;
      }
      return $this->success;
    }
-
 } /* class IraguWebapp */
 
 ?>

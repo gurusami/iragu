@@ -1,6 +1,4 @@
 <?php
-namespace iragu;
-
 /*******************************************************************************
 Iragu: Badminton Court Management Software
 
@@ -24,34 +22,53 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 include 'iragu-webapp.php';
 include '01-iragu-global-utility.php';
+include 'IraguRazorpay.php';
 
 class IraguUserRechargeRazorpay extends IraguWebapp {
-   public $recharge_amount; /* in paise */
-   public $recharge_id;
-   public $offer_id;
-   public $nick;
+    public $recharge_amount; /* in paise */
+    public $recharge_id;
+    public $offer_id;
+    public $nick;
+    public $payApi;
 
-   public function work() {
-      if (isset($_POST['recharge_amount'])) {
-         $this->recharge_amount = $_POST['recharge_amount'];
-      }
-      if (isset($_POST['offer_id'])) {
-         $this->offer_id = $_POST['offer_id'];
-      } else {
-         $this->errmsg .= "offer_id is not available";
-         $this->success = FALSE;
-         return FALSE;
-      }
-      if (isset($_SESSION['userid'])) {
-         $this->nick = $_SESSION['userid'];
-      }
-      if (isset($_POST['form_name'])) {
-         if ($this->tableRechargeInsert($this->nick, $this->offer_id) == FALSE) {
-            echo "<p> FAILED: $this->errmsg </p>";
-         }
-      }
-      $this->success = TRUE;
-      return TRUE;
+    function __construct() {
+        $this->payApi = new IraguRazorpay();
+    }
+
+    public function work() {
+        if (isset($_POST['recharge_amount'])) {
+            $this->recharge_amount = $_POST['recharge_amount'];
+        }
+        if (isset($_POST['offer_id'])) {
+            $this->offer_id = $_POST['offer_id'];
+        } else {
+            $this->errmsg .= "offer_id is not available";
+            $this->success = FALSE;
+            return FALSE;
+        }
+        if (isset($_SESSION['userid'])) {
+            $this->nick = $_SESSION['userid'];
+        }
+        if (isset($_POST['form_name'])) {
+            if ($this->tableRechargeInsert($this->nick, $this->offer_id) == FALSE) {
+                echo "<p> FAILED: $this->errmsg </p>";
+            } else {
+                $this->recharge_id = $this->mysqli->insert_id;
+                $this->payApi->createOrder($this->mysqli, $this->recharge_id,
+                                           $this->recharge_amount,
+                                           $_SESSION['userid']);
+            }
+        }
+        $this->success = TRUE;
+        return TRUE;
+    }
+
+    public function addHiddenFormFields() {
+        echo <<<EOF
+<input type="hidden" name="recharge_id" value="$this->recharge_id" readonly>
+<input type="hidden" name="offer_id" value="$this->offer_id" readonly>
+<input type="hidden" name="recharge_amount" value="$this->recharge_amount" readonly>
+EOF;
    }
 }
 
@@ -83,10 +100,7 @@ $page->work();
           <td> <?php echo paiseToRupees($page->recharge_amount); ?> </td>
         </tr>
       </table>
-      <input type="hidden" name="offer_id"
-             value="<?php echo $page->offer_id; ?>" readonly>
-      <input type="hidden" name="recharge_amount"
-             value="<?php echo $page->recharge_amount; ?>" readonly>
+      <?php $page->addHiddenFormFields(); ?>
       <input type="submit" name="form_name" value="Recharge">
    </form>
 </div>
