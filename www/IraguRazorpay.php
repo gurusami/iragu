@@ -19,6 +19,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 *******************************************************************************/
 require __DIR__ . "/../vendor/autoload.php";
+include 'iragu-private.php';
 
 use Razorpay\Api\Api;
 
@@ -45,8 +46,15 @@ class IraguRazorpay {
    public $razorpayAPI;
 
    function __construct() {
-       $this->api_key = "rzp_test_0SPT29grHC9zI4";
-       $this->api_secret = "UrHcQIV8cc23miZ6tMKGKyeb";
+       global $razorpay_api_key, $razorpay_api_secret;
+
+       $this->api_key = $razorpay_api_key;
+       $this->api_secret = $razorpay_api_secret;
+
+       if (is_null($this->api_key) || is_null($this->api_secret)) {
+           die("Razorpay API Keys are not available");
+       }
+
        $this->razorpayAPI = new Api($this->api_key, $this->api_secret);
    }
 
