@@ -164,3 +164,7 @@ button {
   background: var(--background-2);
 }
 
+.razorpay_button {
+   background-color: red;
+   color: white;
+}

@@ -357,6 +357,34 @@ EOF;
     }
   }
 
+   public function getUserDetails($nick) {
+       $query = "SELECT * FROM ir_people WHERE nick = ?";
+       if (($stmt = $this->mysqli->prepare($query)) == FALSE) {
+           $this->errmsg = "Could not fetch user details";
+           $this->success = FALSE;
+           return FALSE;
+       }
+       if ($stmt->bind_param('s', $nick) == FALSE) {
+           $stmt->close();
+           $this->errmsg = $this->mysqli->error;
+           $this->success = FALSE;
+           return FALSE;
+       }
+       if ($stmt->execute() == FALSE) {
+           $stmt->close();
+           $this->errmsg .= $this->mysqli->error;
+           $this->success = FALSE;
+           return FALSE;
+       }
+       if (($result = $stmt->get_result()) == FALSE) {
+           $this->errmsg .= $stmt->error;
+           $stmt->close();
+           $this->success = FALSE;
+           return FALSE;
+       }
+       return $result->fetch_object();
+   }
+
   /** Insert a record into the ir_people table. */
   public function insertPeople() {
     if (!isset($_POST['player_id'])) {

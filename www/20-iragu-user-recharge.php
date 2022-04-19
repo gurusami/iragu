@@ -44,6 +44,7 @@ function displayCurrentOffers($offers, $url) {
             $offer_id = $obj->offer_id;
             $recharge_paisa = $obj->recharge_amount;
             $cashback = paiseToRupees($obj->cashback);
+            $cashback_paisa = $obj->cashback;
             $recharge = paiseToRupees($obj->recharge_amount);
 echo <<<EOF
 <div class="grid-item">
@@ -53,6 +54,7 @@ echo <<<EOF
       <p> Recharge Amount: $recharge </p>
       <p> Cashback: $cashback </p>
      <input type="hidden" id="offer_id" name="offer_id" value="$offer_id">
+     <input type="hidden" id="cashback" name="cashback" value="$cashback_paisa">
      <input type="hidden" id="recharge_amount" name="recharge_amount"
         value="$recharge_paisa">
     </button>

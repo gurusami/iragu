@@ -65,11 +65,13 @@ class IraguRazorpay {
                  'currency' => 'INR',
                  'notes'    => array('nick' => $nick)));
 
-       /* $order = json_decode($result, false); */
-
-       return $this->tableRazorpayOrderInsert($mysqli, $order->id,
+       if ($this->tableRazorpayOrderInsert($mysqli, $order->id,
            $order->amount, $recharge_id, $order->attempts, $order->status,
-           $order->created_at, $nick);
+           $order->created_at, $nick) == FALSE) {
+           die($mysqli->error);
+       }
+
+       return $order;
     }
 
    public function tableRazorpayOrderInsert($mysqli, $order_id, $amount,
