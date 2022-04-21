@@ -19,6 +19,12 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 *******************************************************************************/
 
+/* Details to connect to MySQL.  The user l2admin can do SELECT, INSERT,
+UPDATE, DELETE operations on all tables in kdb database. */
+
+
+include '01-iragu-global-utility.php';
+
 function echoTitle() {
    echo "Iragu: Badminton Court Management Software";
 }
@@ -207,9 +213,17 @@ EOF;
 }
 
 class IraguWebapp {
-  public $mysqli;
-  public $success; /* FALSE if an error occurred. */
-  public $errmsg;
+   public $mysqli;
+   public $success; /* FALSE if an error occurred. */
+   public $errmsg;
+   public $error;
+   public $errno;
+
+   const ERRNO_HOSTNAME_INVALID = 11;
+   const ERRNO_DBUSER_INVALID = 12;
+   const ERRNO_DBNAME_INVALID = 13;
+   const ERRNO_DBPASSWD_MISSING = 14;
+
   public $copyright_notice = <<<EOF
 <!--
 Iragu: Badminton Court Management Software
@@ -244,25 +258,44 @@ EOF;
         return $row[0];
    }
 
-  public function connect() {
-    $this->mysqli = mysqli_init();
+   public function connect() {
+       $dbhost = "localhost";
+       $dbuser = 'l2admin';
+       $dbname = 'kdb';
+       $dbpasswd = '#TNExit2030#';
 
-    if (!$this->mysqli) {
-      die('mysqli_init failed');
-    }
+       if (!isset($dbhost) || is_null($dbhost)) {
+           $this->errno = self::ERRNO_HOSTNAME_INVALID;
+           $this->error = "Database Hostname is invalid";
+           return false;
+       }
 
-    /* The user l2admin can do SELECT, INSERT, UPDATE, DELETE operations on
-    all tables in kdb database. */
-    if (!$this->mysqli->real_connect('localhost', 'l2admin', '#TNExit2030#',
-        'kdb')) {
-       die('Connect Error (' . mysqli_connect_errno() . ') '
-            . mysqli_connect_error());
-    }
-    $this->success = true;
+       if (!isset($dbuser) || is_null($dbuser)) {
+           $this->errno = self::ERRNO_DBUSER_INVALID;
+           $this->error = "Database username is invalid";
+           return false;
+       }
 
-    $trace_insert = "INSERT INTO ir_trace (trace_log) VALUES (?)";
-    $trace_stmt = $this->mysqli->prepare($trace_insert);
-  }
+       if (!isset($dbname) || is_null($dbname)) {
+           $this->errno = self::ERRNO_DBNAME_INVALID;
+           $this->error = "Database name is invalid";
+           return false;
+       }
+
+       if (!isset($dbpasswd) || is_null($dbpasswd)) {
+           $this->errno = self::ERRNO_DBPASSWD_MISSING;
+           $this->error = "Database password is missing";
+           return false;
+       }
+
+       if (($mysqli = mysqli_init()) == FALSE) {
+           return FALSE;
+       }
+       if (!$mysqli->real_connect($dbhost, $dbuser, $dbpasswd, $dbname)) {
+           return FALSE;
+       }
+       return $mysqli;
+   }
 
   public function is_user_authenticated() {
     session_start();

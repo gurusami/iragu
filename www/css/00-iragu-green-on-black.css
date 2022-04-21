@@ -1,6 +1,9 @@
 :root {
   --hue: 120; /* Green */
-  --background: black;
+  /* --background: black; */
+  --background: #202020;
+  --background-page: #4D5D53;
+  --background-login: black;
   --background-2: #181818;
   --text-color: MediumSpringGreen;
   --FF: "Lucida Console", "Courier New", monospace;
@@ -81,12 +84,34 @@ a {
 }
 
 #login {
+  background: var(--background-login);
   width: 60vw;
   width: 60vh;
   margin: 20vh auto;
-  border: 1px solid green;
-  border-radius: 5px;
+  border: 0px solid green;
+  border-radius: 10px;
   padding: 10px;
+  font-size: 0.75em;
+}
+
+input[type=submit].ir-sign-in {
+   background: var(--text-color); 
+   color: var(--background-login);
+   width: 40%;
+   text-align: center;
+   margin-left: 30%;
+   font-size: 0.5em;
+   font-weight: bold;
+}
+
+input[type=submit].ir-sign-in:hover {
+   background: var(--background-login);
+   color: var(--text-color);
+   border: 1px solid var(--text-color);
+}
+
+form.ir-form-login {
+   padding: 12px;
 }
 
 .grid-container {

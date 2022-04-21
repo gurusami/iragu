@@ -37,10 +37,10 @@ if (!isAuthorized()) {
   exit();
 }
 
-class IraguMenu extends iragu\IraguWebapp {
+class IraguMenuAdmin extends iragu\IraguWebapp {
 }
 
-$page = new IraguMenu();
+$page = new IraguMenuAdmin();
 ?>
 
 <!doctype html>

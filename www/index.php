@@ -94,7 +94,7 @@ if (isset($_POST['username'])) {
 ?>
 
 <div id="login">
- <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>"
+ <form class="ir-form-login" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>"
        method="post">
     <label class="form_label"> Username
        <input type="text" name="username" maxlength="8"/>
@@ -102,7 +102,7 @@ if (isset($_POST['username'])) {
     <label> Password
        <input type="password" name="token" maxlength="30"/> 
     </label>
-    <input type="submit" name="login" value="Sign In">
+    <input class="ir-sign-in" type="submit" name="login" value="Sign In">
  </form>
 </div>
    <p style="font-size: small;" align="center">

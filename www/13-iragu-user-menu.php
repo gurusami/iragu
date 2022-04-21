@@ -27,10 +27,10 @@ if (!isset($_SESSION['userid'])) {
    exit();
 }
 
-class IraguMenu extends IraguWebapp {
+class IraguMenuUser extends IraguWebapp {
 }
 
-$page = new IraguMenu();
+$page = new IraguMenuUser();
 ?>
 
 <!doctype html>
