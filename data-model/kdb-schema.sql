@@ -258,6 +258,76 @@ CREATE TABLE `ir_people` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `ir_razorpay_order`
+--
+
+DROP TABLE IF EXISTS `ir_razorpay_order`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `ir_razorpay_order` (
+  `order_id` varchar(30) NOT NULL,
+  `amount` int NOT NULL,
+  `currency` char(3) NOT NULL DEFAULT 'inr',
+  `recharge_id` bigint NOT NULL,
+  `attempts` int NOT NULL DEFAULT '0',
+  `status` varchar(8) NOT NULL,
+  `created_at` int DEFAULT NULL,
+  `order_created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_by` varchar(8) NOT NULL,
+  PRIMARY KEY (`order_id`),
+  UNIQUE KEY `recharge_id` (`recharge_id`),
+  KEY `created_by` (`created_by`),
+  CONSTRAINT `ir_razorpay_order_ibfk_1` FOREIGN KEY (`recharge_id`) REFERENCES `ir_recharge` (`recharge_id`),
+  CONSTRAINT `ir_razorpay_order_ibfk_2` FOREIGN KEY (`created_by`) REFERENCES `ir_people` (`nick`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `ir_razorpay_payment`
+--
+
+DROP TABLE IF EXISTS `ir_razorpay_payment`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `ir_razorpay_payment` (
+  `payment_id` varchar(30) NOT NULL,
+  `order_id` varchar(30) NOT NULL,
+  `recharge_id` bigint NOT NULL,
+  `recharge_amount` int DEFAULT NULL,
+  `status` varchar(10) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_by` varchar(8) NOT NULL,
+  PRIMARY KEY (`payment_id`),
+  KEY `created_by` (`created_by`),
+  KEY `order_id` (`order_id`),
+  KEY `recharge_id` (`recharge_id`),
+  CONSTRAINT `ir_razorpay_payment_ibfk_1` FOREIGN KEY (`created_by`) REFERENCES `ir_people` (`nick`),
+  CONSTRAINT `ir_razorpay_payment_ibfk_2` FOREIGN KEY (`order_id`) REFERENCES `ir_razorpay_order` (`order_id`),
+  CONSTRAINT `ir_razorpay_payment_ibfk_3` FOREIGN KEY (`recharge_id`) REFERENCES `ir_recharge` (`recharge_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `ir_razorpay_session`
+--
+
+DROP TABLE IF EXISTS `ir_razorpay_session`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `ir_razorpay_session` (
+  `order_id` varchar(30) NOT NULL,
+  `sid` varchar(128) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_by` varchar(8) NOT NULL,
+  PRIMARY KEY (`order_id`),
+  UNIQUE KEY `sid` (`sid`),
+  KEY `created_by` (`created_by`),
+  CONSTRAINT `ir_razorpay_session_ibfk_1` FOREIGN KEY (`created_by`) REFERENCES `ir_people` (`nick`),
+  CONSTRAINT `ir_razorpay_session_ibfk_2` FOREIGN KEY (`order_id`) REFERENCES `ir_razorpay_order` (`order_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `ir_recharge`
 --
 
@@ -269,7 +339,6 @@ CREATE TABLE `ir_recharge` (
   `nick` varchar(8) DEFAULT NULL,
   `offer_id` varchar(8) NOT NULL,
   `pay_mode` varchar(8) NOT NULL,
-  `pay_notes` varchar(40) NOT NULL,
   `recharge_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `recharge_by` varchar(8) NOT NULL,
   PRIMARY KEY (`recharge_id`),
@@ -281,7 +350,7 @@ CREATE TABLE `ir_recharge` (
   CONSTRAINT `ir_recharge_ibfk_3` FOREIGN KEY (`nick`) REFERENCES `ir_people` (`nick`),
   CONSTRAINT `ir_recharge_ibfk_4` FOREIGN KEY (`recharge_by`) REFERENCES `ir_people` (`nick`),
   CONSTRAINT `ir_recharge_ibfk_5` FOREIGN KEY (`pay_mode`) REFERENCES `ir_payment_mode` (`mode_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=47 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -367,4 +436,4 @@ CREATE TABLE `ir_user_types` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-04-09 23:05:38
+-- Dump completed on 2022-04-21 23:08:00
