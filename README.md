@@ -21,3 +21,6 @@ phpab -o www/autoload.php www
 
 Using PHPUnit for unit testing PHP classes. For more details refer to
 https://phpunit.de.
+
+Use the following command to run the unit tests:
+phpunit --bootstrap www/autoload.php tests

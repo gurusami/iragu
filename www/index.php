@@ -24,9 +24,13 @@ session_start();
 include 'iragu-webapp.php';
 
 class LoginPage extends IraguWebapp {
-  public $pass;
+   public $pass;
 
-  public function validate($user, $password) {
+   public function validate($user, $password) {
+       if (!isset($this->mysqli) || is_null($this->mysqli)) {
+           die("MySQL connection object is not initialized");
+       }
+
     $query = "SELECT sha2(?, 256) = token, usertype FROM ir_login WHERE nick = ?";
     if (($stmt = $this->mysqli->prepare($query)) == FALSE) {
        $this->errmsg .= $this->mysqli->error;

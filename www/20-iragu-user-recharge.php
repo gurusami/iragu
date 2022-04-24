@@ -21,7 +21,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 /* Iragu: All Users: Recharge Account */
 
 include 'iragu-webapp.php';
-include '01-iragu-global-utility.php';
 
 function getRechargeOffers($mysqli) {
     $query = "SELECT offer_id, offer_from, offer_to, recharge_amount, " .

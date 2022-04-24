@@ -288,13 +288,13 @@ EOF;
            return false;
        }
 
-       if (($mysqli = mysqli_init()) == FALSE) {
+       if (($this->mysqli = mysqli_init()) == FALSE) {
            return FALSE;
        }
-       if (!$mysqli->real_connect($dbhost, $dbuser, $dbpasswd, $dbname)) {
+       if (!$this->mysqli->real_connect($dbhost, $dbuser, $dbpasswd, $dbname)) {
            return FALSE;
        }
-       return $mysqli;
+       return $this->mysqli;
    }
 
   public function is_user_authenticated() {

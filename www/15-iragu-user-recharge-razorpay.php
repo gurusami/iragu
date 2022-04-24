@@ -32,8 +32,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 */
 
+require 'autoload.php';
 include 'iragu-webapp.php';
-include '01-iragu-global-utility.php';
 include 'IraguRazorpay.php';
 include 'iragu-private.php';
 
@@ -157,6 +157,13 @@ EOF;
        $rows['Recharge Id'] = $this->recharge_id;
        $rows['Cashback'] = paiseToRupees($this->cashback);
        ir_table($rows);
+
+       $rzr_session = new TableRazorpaySession($this->mysqli);
+       $rzr_session->order_id = $this->order_id;
+       $rzr_session->sid  = session_id();
+       $rzr_session->userid  = $_SESSION['userid'];
+       $rzr_session->insert();
+
        $this->addRazorpayButton();
        $this->addRazorpayJS($userobj->full_name,
                             $userobj->email,

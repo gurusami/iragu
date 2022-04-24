@@ -23,11 +23,19 @@ class TableRazorpaySession {
    public $mysqli;
    public $order_id;
    public $sid;
+   public $userid;
    public $error;
    public $errno;
 
-   const ERRNO_INVALID_DBOBJ = 10;
-   const ERRNO_ORDER_MISSING = 11;
+   const ERRNO_INVALID_DBOBJ     = 10;
+   const ERRNO_ORDER_MISSING     = 11;
+   const ERRNO_USERID_NOTAUTH    = 12;
+   const ERRNO_PHPSESS_MISSING   = 13;
+   const ERRNO_USERINFO_MISSING  = 14;
+   const ERRNO_BINDPARAM_FAILED  = 15;
+   const ERRNO_EXECUTE_FAILED    = 16;
+   const ERRNO_PREPARE_FAILED    = 17;
+   const ERRNO_GETRESULT_FAILED  = 18;
 
    function __construct($mysqli) {
        $this->mysqli = $mysqli;
@@ -49,17 +57,16 @@ class TableRazorpaySession {
            return FALSE;
        }
 
-       if (!isset($_SESSION['userid']))
+       if (!isset($this->userid))
        {
            $this->error = "User not authenticated";
-           $this->errno = 3;
+           $this->errno = self::ERRNO_USERID_NOTAUTH;
            return FALSE;
        }
 
-       $this->sid = session_id();
        if (!isset($this->sid) || is_null($this->sid)) {
            $this->error = "PHP session id is missing";
-           $this->errno = 4;
+           $this->errno = self::ERRNO_PHPSESS_MISSING;
            return FALSE;
        }
 
@@ -67,26 +74,76 @@ class TableRazorpaySession {
            " VALUES(?, ?, ?)";
 
        if (($stmt = $this->mysqli->prepare($query)) == FALSE) {
-           $this->error = "Could not fetch user details";
-           $this->errno = 1;
+           $this->error = $this->mysqli->error;
+           $this->errno = self::ERRNO_PREPARE_FAILED;
            return FALSE;
        }
-       if ($stmt->bind_param('sss', $this->order_id, $this->sid,
-                                    $_SESSION['userid']) == FALSE) {
+
+       if ($stmt->bind_param('sss', $this->order_id,
+                                    $this->sid,
+                                    $this->userid) == FALSE) {
            $stmt->close();
            $this->error = $this->mysqli->error;
-           $this->errno = 5;
+           $this->errno = self::ERRNO_BINDPARAM_FAILED;
            return FALSE;
        }
 
        if ($stmt->execute() == FALSE) {
            $stmt->close();
            $this->error = $this->mysqli->error;
-           $this->errno = 6;
+           $this->errno = self::ERRNO_EXECUTE_FAILED;
            return FALSE;
        }
 
        return TRUE;
+   }
+
+   public function fetch_object() {
+       $this->errno = 0;
+
+       if (!isset($this->mysqli) || is_null($this->mysqli))
+       {
+           $this->error = "MySQL connection is not available";
+           $this->errno = self::ERRNO_INVALID_DBOBJ;
+           return FALSE;
+       }
+
+       if (!isset($this->order_id) || is_null($this->order_id))
+       {
+           $this->error = "Razorpay order_id is not available";
+           $this->errno = self::ERRNO_ORDER_MISSING;
+           return FALSE;
+       }
+
+       $query = "SELECT * FROM ir_razorpay_session WHERE order_id = ?";
+
+       if (($stmt = $this->mysqli->prepare($query)) == FALSE) {
+           $this->error = $this->mysqli->error;
+           $this->errno = self::ERRNO_PREPARE_FAILED;
+           return FALSE;
+       }
+
+       if ($stmt->bind_param('s', $this->order_id) == FALSE) {
+           $stmt->close();
+           $this->error = $this->mysqli->error;
+           $this->errno = self::ERRNO_BINDPARAM_FAILED;
+           return FALSE;
+       }
+
+       if ($stmt->execute() == FALSE) {
+           $stmt->close();
+           $this->error = $this->mysqli->error;
+           $this->errno = self::ERRNO_EXECUTE_FAILED;
+           return FALSE;
+       }
+
+       if (($result = $stmt->get_result()) == FALSE) {
+           $this->error = $stmt->error;
+           $this->errno = self::ERRNO_GETRESULT_FAILED;
+           $stmt->close();
+           return FALSE;
+       }
+       return $result->fetch_object();
    }
 };
 
