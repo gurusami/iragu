@@ -75,6 +75,8 @@ class IraguUserRechargeRazorpay extends IraguWebapp {
                echo "<p> FAILED: $this->errmsg </p>";
            } else {
                $this->recharge_id = $this->mysqli->insert_id;
+               $_SESSION['recharge_id'] = $this->recharge_id;
+               $_SESSION['recharge_amount'] = $this->recharge_id;
                $this->razorpay_order = $this->payApi->createOrder(
                    $this->mysqli, $this->recharge_id, $this->recharge_amount,
                    $_SESSION['userid']);
@@ -180,6 +182,7 @@ EOF;
        $hidden_fields = $this->getHiddenFormFields();
 
        echo <<<EOF
+
 <div class="recharge-div">
    <form action="$url" method="post">
        <table align="center">
@@ -195,7 +198,8 @@ EOF;
        $hidden_fields
        <input type="submit" name="form_name" value="Recharge">
    </form>
-</div>
+</div> <!-- recharge-div -->
+
 EOF;
    }
 

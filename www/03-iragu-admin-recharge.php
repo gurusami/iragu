@@ -165,26 +165,15 @@ EOF;
    }
 
    public function updateBalanceCashback() {
-     $query = "UPDATE ir_balance SET balance = balance + ? WHERE nick = ?";
-     $stmt = $this->mysqli->prepare($query);
-     $stmt->bind_param('is', $this->cashback, $_POST['nick']);
-     $this->success = $stmt->execute();
-     if (!$this->success) {
-        $this->errmsg = $stmt->error;
-     }
-     return $this->success;
+       $tableBalance = new TableBalance($this->mysqli);
+       $this->success = $tableBalance->addBalance($this->cashback);
+       return $this->success;
    }
 
    public function updateBalanceRechargeAmount() {
-     $info = "Recharge Id: " . $this->mysqli->insert_id;
-     $query = "UPDATE ir_balance SET balance = balance + ? WHERE nick = ?";
-     $stmt = $this->mysqli->prepare($query);
-     $stmt->bind_param('is', $this->recharge_amount, $_POST['nick']);
-     $this->success = $stmt->execute();
-     if (!$this->success) {
-        $this->errmsg = $stmt->error;
-     }
-     return $this->success;
+       $tableBalance = new TableBalance($this->mysqli);
+       $this->success = $tableBalance->addBalance($this->recharge_amount);
+       return $this->success;
    }
 
    public function updateDatabase() {

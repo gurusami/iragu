@@ -22,6 +22,7 @@ require __DIR__ . "/../vendor/autoload.php";
 include 'iragu-private.php';
 
 use Razorpay\Api\Api;
+use Razorpay\Api\Errors\SignatureVerificationError;
 
 /*
 
@@ -89,6 +90,33 @@ class IraguRazorpay {
            $status, $created_at, $created_by);
        return $stmt->execute();
    }
+
+   public function verifySignature($order_id, $payment_id, $signature) {
+       if (empty($order_id)   || is_null($order_id) ||
+           empty($payment_id) || is_null($payment_id) ||
+           empty($signature)  || is_null($signature)) {
+           return false;
+       }
+
+       try { 
+           $attributes = array(
+               'razorpay_order_id' => $order_id,
+               'razorpay_payment_id' => $payment_id,
+               'razorpay_signature' => $signature);
+
+           $this->razorpayAPI->utility->verifyPaymentSignature($attributes);
+       }
+       catch(SignatureVerificationError $e) {
+           return false;
+       }
+
+       return true;
+   }
+
+   public function fetchPayment($paymentId) {
+       return $this->razorpayAPI->payment->fetch($paymentId);
+   }
+
 }
 
 ?>

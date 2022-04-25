@@ -47,6 +47,7 @@ class LoginPage extends IraguWebapp {
     if ($valid == 1) {
       $this->pass = true;
       $_SESSION['userid'] = $user;
+      $_SESSION['nick'] = $user;
       $_SESSION['usertype'] = $usertype;
     } else {
       $this->pass = false;
@@ -59,6 +60,16 @@ class LoginPage extends IraguWebapp {
     }
   }
 
+}
+
+if (isset($_SESSION['nick']) && isset($_SESSION['usertype'])) {
+   /* Redirect browser */
+   if (strcmp($_SESSION['usertype'], "admin") == 0) {
+       header('Location: ' . '12-iragu-admin-menu.php');
+   } else {
+       header('Location: ' . '13-iragu-user-menu.php');
+   }
+   exit();
 }
 
 $page = new LoginPage();

@@ -20,12 +20,14 @@ spl_autoload_register(
                 'iragumenuuser' => '/13-iragu-user-menu.php',
                 'iragupagetemplate' => '/09-iragu-template.php',
                 'iragurazorpay' => '/IraguRazorpay.php',
-                'iragurazorpaypaymentstatus' => '/16-razorpay-payment-status.php',
                 'iraguregister' => '/11-iragu-signup.php',
                 'iraguuserrecharge' => '/20-iragu-user-recharge.php',
                 'iraguuserrechargerazorpay' => '/15-iragu-user-recharge-razorpay.php',
                 'iraguwebapp' => '/iragu-webapp.php',
                 'loginpage' => '/index.php',
+                'pagerazorpaylanding' => '/PageRazorpayLanding.php',
+                'tablebalance' => '/TableBalance.php',
+                'tablerazorpaypayment' => '/TableRazorpayPayment.php',
                 'tablerazorpaysession' => '/TableRazorpaySession.php'
             );
         }
