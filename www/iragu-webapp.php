@@ -371,6 +371,10 @@ EOF;
   public function work() {
   }
 
+   /** Do cleanup at the end of page display. */
+   public function cleanup() {
+   }
+
 /******************************************************************************/
 /** TABLE: ir_people */
 

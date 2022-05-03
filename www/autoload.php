@@ -7,12 +7,13 @@ spl_autoload_register(
         static $classes = null;
         if ($classes === null) {
             $classes = array(
-                'iragu\\iraguadminrechargeoffer' => '/02-iragu-admin-offer-recharge.php',
+                'errno' => '/errno.php',
                 'iraguadminaddcampus' => '/04-iragu-admin-add-campus.php',
                 'iraguadminaddcourt' => '/05-iragu-admin-court-add.php',
                 'iraguadmincourtbooking' => '/08-iragu-admin-court-booking.php',
                 'iraguadmincustomerrecharge' => '/03-iragu-admin-recharge.php',
                 'iraguadminopenbookings' => '/06-iragu-admin-bookings-open.php',
+                'iraguadminrechargeoffer' => '/02-iragu-admin-offer-recharge.php',
                 'iraguadminregister' => '/00-iragu-admin-register-customer.php',
                 'iragucheckavailability' => '/07-iragu-check-availability.php',
                 'iragumakeregisteroffer' => '/make-register-offer.php',
@@ -27,6 +28,7 @@ spl_autoload_register(
                 'loginpage' => '/index.php',
                 'pagerazorpaylanding' => '/PageRazorpayLanding.php',
                 'tablebalance' => '/TableBalance.php',
+                'tablepassbook' => '/TablePassbook.php',
                 'tablerazorpaypayment' => '/TableRazorpayPayment.php',
                 'tablerazorpaysession' => '/TableRazorpaySession.php'
             );

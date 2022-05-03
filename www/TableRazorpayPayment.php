@@ -41,7 +41,17 @@ class TableRazorpayPayment {
    const ERRNO_EXECUTE_FAILED = 9;
 
    function __construct() {
+       if (!empty($_SESSION['userid'])) {
+           $this->nick = $_SESSION['userid'];
+       }
+   }
+
+   public function setNickFromSession() {
+       if (empty($_SESSION['userid'])) {
+           return false;
+       }
        $this->nick = $_SESSION['userid'];
+       return true;
    }
 
    public function insert($mysqli) {

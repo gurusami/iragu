@@ -37,7 +37,7 @@ if (!isAuthorized()) {
   exit();
 }
 
-class IraguMenuAdmin extends iragu\IraguWebapp {
+class IraguMenuAdmin extends IraguWebapp {
 }
 
 $page = new IraguMenuAdmin();

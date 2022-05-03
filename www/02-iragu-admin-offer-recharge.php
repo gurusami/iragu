@@ -1,6 +1,4 @@
 <?php
-namespace iragu;
-
 /*******************************************************************************
 Iragu: Badminton Court Management Software
 
@@ -40,7 +38,6 @@ if (!isAuthorized()) {
 }
 
 include 'iragu-webapp.php';
-include '01-iragu-global-utility.php';
 
 class IraguAdminRechargeOffer extends IraguWebapp {
    public $offer_id   = "";

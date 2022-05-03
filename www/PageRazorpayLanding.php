@@ -29,41 +29,54 @@ class PageRazorpayLanding extends IraguWebapp {
    public $orderIdFromDB;
    public $tablePayment;
    public $tableBalance;
+   public $tablePassbook;
    public $paymentObj;
+   public $recharge_id;
+   public $cashback;
 
    function __construct() {
        $this->razorpay = new IraguRazorpay();
        $this->tablePayment = new TableRazorpayPayment();
        $this->tableBalance = new TableBalance($this->mysqli);
+       $this->tablePassbook = new TablePassbook($this->mysqli);
    }
 
-   /** Do some basic checks before making DB connection. */
+   /** Do some basic checks before making DB connection.
+   @return true on success, false on failure. */
    public function init() {
        if (empty($_POST['razorpay_order_id'])) {
-           die("Invalid");
+           $this->error = "Razorpay Order Id is invalid";
+           $this->errno = errno::INVALID_RAZORPAY_ORDER_ID;
+           return false;
        }
-       $this->order_id = $_POST['razorpay_order_id'];
-
        if (empty($_POST['razorpay_payment_id'])) {
-           die("Invalid");
+           $this->error = "Razorpay Payment ID is invalid";
+           $this->errno = errno::INVALID_RAZORPAY_PAYMENT_ID;
+           return false;
        }
-       $this->payment_id = $_POST['razorpay_payment_id'];
        if (empty($_POST['razorpay_signature'])) {
-           die("Invalid");
+           $this->error = "Razorpay signature is missing";
+           $this->errno = errno::MISSING_RAZORPAY_SIGNATURE;
+           return false;
        }
-       $this->signature = $_POST['razorpay_signature'];
+       $this->order_id   = $_POST['razorpay_order_id'];
+       $this->payment_id = $_POST['razorpay_payment_id'];
+       $this->signature  = $_POST['razorpay_signature'];
+       $this->errno = errno::PASS;
+       return true;
    }
 
    public function savePaymentId() {
-       $tablePayment->payment_id = $this->payment_id;
-       $tablePayment->order_id = $this->order_id;
-       $tablePayment->recharge_id = $_SESSION['recharge_id'];
-       $tablePayment->recharge_amount = $_SESSION['recharge_id'];
-       if ($tablePayment->insert($this->mysqli) == false) {
-           $this->errno = $tablePayment->errno;
-           $this->error = $tablePayment->error;
+       $this->tablePayment->paymentId = $this->payment_id;
+       $this->tablePayment->order_id = $this->order_id;
+       $this->tablePayment->recharge_id = $this->recharge_id;
+       $this->tablePayment->recharge_amount = $this->recharge_amount;
+       if ($this->tablePayment->insert($this->mysqli) == false) {
+           $this->errno = $this->tablePayment->errno;
+           $this->error = $this->tablePayment->error;
            return false;
        }
+       $this->errno = errno::PASS;
        return true;
    }
 
@@ -78,53 +91,125 @@ class PageRazorpayLanding extends IraguWebapp {
            echo "<p> $razorpay_session->errno </p>";
            echo "<p> $razorpay_session->error </p>";
            $this->error = "Failed to fetch session from DB.";
+           $this->errno = errno::FAILED_FETCH_OBJECT;
            return false;
        }
        $this->orderIdFromDB = $row_obj->order_id;
        session_id($row_obj->sid);
        session_start();
-
        if (strcmp($_SESSION['userid'], $row_obj->created_by) != 0) {
            $this->error = "User id mismatch. Retry...";
+           $this->errno = errno::INVALID_NICK;
            return false;
        }
-
+       $this->recharge_id = $_SESSION['recharge_id'];
+       $this->recharge_amount = $_SESSION['recharge_amount'];
+       $this->cashback = $_SESSION['cashback'];
+       if ($this->tablePayment->setNickFromSession() == false) {
+           $this->error = "Session has no nick";
+           $this->errno = errno::INVALID_NICK;
+           return false;
+       }
+       if ($this->tableBalance->setNickFromSession() == false) {
+           $this->error = "Session has no nick";
+           $this->errno = errno::INVALID_NICK;
+           return false;
+       }
+       if ($this->tablePassbook->setNickFromSession() == false) {
+           $this->error = "Session has no nick";
+           $this->errno = errno::INVALID_NICK;
+           return false;
+       }
+       $this->errno = errno::PASS;
        return true;
    }
 
    public function savePaymentObj() {
        if (empty($this->paymentObj) || is_null($this->paymentObj)) {
-           die("Invalid Payment Object");
+           $this->error = "Missing Razorpay Payment Object";
+           $this->errno = errno::MISSING_RAZORPAY_PAYMENT_OBJ;
+           return false;
        }
        $this->tablePayment->paymentId = $this->paymentObj->id;
        $this->tablePayment->status = $this->paymentObj->status;
        $this->tablePayment->update($this->mysqli);
+       return true;
    }
 
    public function work() {
-       $this->init();
-
+       if ($this->errno != 0) {
+           return false;
+       }
        if (!$this->restoreSession()) {
-           die($this->error);
+           $this->error = "Failed to restore session";
+           $this->errno = errno::FAILED_RESTORE_SESSION;
+           return false;
        }
        if ($this->razorpay->verifySignature($this->orderIdFromDB,
                                             $this->payment_id,
                                             $this->signature) == false) {
-           die("Invalid payment signature.");
+           $this->error = "Razorpay signature verification failed";
+           $this->errno = errno::FAILED_RAZORPAY_SIGNATURE;
+           return false;
        }
        if ($this->savePaymentId() == false) {
-           die($this->error);
+           return false;
        }
        $this->paymentObj = $this->razorpay->fetchPayment($this->payment_id);
-       $this->savePaymentObj();
-       if (strcmp($paymentObj->status, "captured") == 0) {
-           if ($this->tableBalance->addBalance($paymentObj->amount) == false) {
-               die($this->tableBalance->error);
-           }
-           /* Add entry to passbook. */
-           /* For cashback: Update the balance */
-           /* Add another entry to passbook for cashback. */
+       if ($this->savePaymentObj() == false) {
+           return false;
        }
+
+       if (strcmp($this->paymentObj->status, "captured") != 0) {
+           $this->error = "Payment status is " . $this->paymentObj->status;
+           $this->errno = errno::FAILED_RAZORPAY;
+           return false;
+       }
+       $this->increaseBalance();
+       $this->giveCashback();
+       return true;
+   }
+
+   public function increaseBalance() {
+       /* Increase the balance. */
+       if ($this->tableBalance->addBalance($this->paymentObj->amount) == false) {
+           $this->error = $this->tableBalance->error;
+           $this->errno = 1;
+           return false;
+       }
+       /* Get the current balance */
+       $balance = $this->tableBalance->getCurrentBalance();
+       /* Add entry to passbook. */
+       if ($this->tablePassbook->recharge($this->paymentObj->amount,
+                                          $balance,
+                                          $this->recharge_id) == false) {
+           $this->error = $this->tablePassbook->error;
+           $this->errno = $this->tablePassbook->errno;
+           return false;
+       }
+       return true;
+   }
+
+   public function giveCashback() {
+       /* Increase the balance. */
+       if ($this->tableBalance->addBalance($this->cashback) == false) {
+           $this->error = $this->tableBalance->error;
+           $this->errno = 1;
+           return false;
+       }
+
+       /* Get the current balance */
+       $balance = $this->tableBalance->getCurrentBalance();
+
+       /* Add entry to passbook. */
+       if ($this->tablePassbook->cashback($this->cashback,
+                                          $balance,
+                                          $this->recharge_id) == false) {
+           $this->error = $this->tablePassbook->error;
+           $this->errno = $this->tablePassbook->errno;
+           return false;
+       }
+       return true;
    }
 
    public function view() {
@@ -135,11 +220,24 @@ class PageRazorpayLanding extends IraguWebapp {
        ir_body_open();
        ir_page_top();
 
+       if ($this->errno == errno::PASS) {
+           echo "<p> RECHARGE SUCCESSFUL </p> ";
+       } else {
+           echo "<p> " . $this->error . " </p> ";
+       }
+
+
        echo "<pre>" . "\n";
        print_r($_POST);
        echo "</pre>" . "\n";
 
        ir_body_close();
        ir_html_close();
+   }
+
+   public function cleanup() {
+       unset($_SESSION['recharge_id']);
+       unset($_SESSION['recharge_amount']);
+       unset($_SESSION['cashback']);
    }
 }

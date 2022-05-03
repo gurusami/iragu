@@ -32,10 +32,9 @@ include 'iragu-webapp.php';
 include 'iragu-private.php';
 
 $page = new PageRazorpayLanding();
-/* This is the landing page.  So session is not available.
-   $page->is_user_authenticated(); */
-$page->init();
-$page->connect();
-$page->work();
+if ($page->init() && $page->connect() && $page->work()) {
+   $page->errno = 0;
+}
 $page->view();
+$page->cleanup();
 ?>

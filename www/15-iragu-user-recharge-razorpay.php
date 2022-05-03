@@ -77,6 +77,8 @@ class IraguUserRechargeRazorpay extends IraguWebapp {
                $this->recharge_id = $this->mysqli->insert_id;
                $_SESSION['recharge_id'] = $this->recharge_id;
                $_SESSION['recharge_amount'] = $this->recharge_id;
+               $_SESSION['cashback'] = $this->cashback;
+               $_SESSION['offer_id'] = $this->offer_id;
                $this->razorpay_order = $this->payApi->createOrder(
                    $this->mysqli, $this->recharge_id, $this->recharge_amount,
                    $_SESSION['userid']);
