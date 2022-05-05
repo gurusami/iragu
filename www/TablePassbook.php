@@ -39,62 +39,16 @@ class TablePassbook {
        }
    }
 
+   public function setDB($mysqli) {
+       $this->mysqli = $mysqli;
+   }
+
    public function setNickFromSession() {
        if (empty($_SESSION['userid'])) {
            return false;
        }
        $this->nick = $_SESSION['userid'];
        return true;
-   }
-
-   public function getCurrentBalance() {
-       if (is_null($this->mysqli)) {
-           $this->error = "DB Connection object missing";
-           $this->errno = errno::INVALID_DBOBJ;
-           return false;
-       }
-       if (empty($this->nick)) {
-           $this->error = "Invalid nick";
-           $this->errno = errno::INVALID_NICK;
-           return false;
-       }
-       $query = "SELECT * FROM ir_balance WHERE nick = ?";
-       if (($stmt = $this->mysqli->prepare($query)) == FALSE) {
-           $this->error = $this->mysqli->error;
-           $this->errno = errno::FAILED_PREPARE;
-           return FALSE;
-       }
-       if ($stmt->bind_param('s', $this->nick) == FALSE) {
-           $stmt->close();
-           $this->error = $this->mysqli->error;
-           $this->errno = errno::FAILED_BINDPARAM;
-           return FALSE;
-       }
-       if ($stmt->execute() == FALSE) {
-           $stmt->close();
-           $this->error = $this->mysqli->error;
-           $this->errno = errno::FAILED_EXECUTE;
-           return FALSE;
-       }
-       if (($result = $stmt->get_result()) == false) {
-           $stmt->close();
-           $this->error = $this->mysqli->error;
-           $this->errno = errno::NOT_FOUND_RECORD;
-           return false;
-       }
-       if (($object = $result->fetch_object()) == false) {
-           $stmt->close();
-           $this->error = $this->mysqli->error;
-           $this->errno = errno::FAILED_FETCH_OBJECT;
-           return false;
-       }
-
-       if (is_null($object)) {
-           $stmt->close();
-           $this->error = $this->mysqli->error;
-           $this->errno = errno::NULL_OBJECT;
-           return false;
-       }
    }
 
    public function recharge($recharge_amount, $balance, $recharge_id) {
@@ -108,6 +62,11 @@ class TablePassbook {
            $this->errno = errno::INVALID_AMOUNT;
            return false;
        }
+       if (empty($balance)) {
+           $this->error = "TablePassbook::recharge():Invalid balance amount";
+           $this->errno = errno::INVALID_AMOUNT;
+           return false;
+       }
        if (empty($this->nick)) {
            $this->error = "Invalid nick";
            $this->errno = errno::INVALID_NICK;
@@ -116,7 +75,7 @@ class TablePassbook {
        $trx_info = "Recharge: " . $recharge_id;
        $query = "INSERT INTO ir_passbook (nick, trx_info, credit, " .
            " running_total, recharge_id) VALUES (?, ?, ?, ?, ?);";
-       if (($stmt = $mysqli->prepare($query)) == FALSE) {
+       if (($stmt = $this->mysqli->prepare($query)) == FALSE) {
            $this->error = $this->mysqli->error;
            $this->errno = errno::FAILED_PREPARE;
            return FALSE;
@@ -134,11 +93,11 @@ class TablePassbook {
 
        if ($stmt->execute() == FALSE) {
            $stmt->close();
-           $this->error = $mysqli->error;
+           $this->error = $this->mysqli->error;
            $this->errno = errno::FAILED_EXECUTE;
            return FALSE;
        }
-
+       $stmt->close();
        return true;
    }
 
@@ -153,6 +112,16 @@ class TablePassbook {
            $this->errno = errno::INVALID_AMOUNT;
            return false;
        }
+       if (empty($balance)) {
+           $this->error = "Invalid balance amount";
+           $this->errno = errno::INVALID_AMOUNT;
+           return false;
+       }
+       if (empty($cashback)) {
+           $this->error = "Invalid cashback amount";
+           $this->errno = errno::INVALID_AMOUNT;
+           return false;
+       }
        if (empty($this->nick)) {
            $this->error = "Invalid nick";
            $this->errno = errno::INVALID_NICK;
@@ -161,7 +130,7 @@ class TablePassbook {
        $trx_info = "Cashback for Recharge: " . $recharge_id;
        $query = "INSERT INTO ir_passbook (nick, trx_info, credit, " .
            " running_total, recharge_id) VALUES (?, ?, ?, ?, ?);";
-       if (($stmt = $mysqli->prepare($query)) == FALSE) {
+       if (($stmt = $this->mysqli->prepare($query)) == FALSE) {
            $this->error = $this->mysqli->error;
            $this->errno = errno::FAILED_PREPARE;
            return FALSE;
@@ -179,7 +148,7 @@ class TablePassbook {
 
        if ($stmt->execute() == FALSE) {
            $stmt->close();
-           $this->error = $mysqli->error;
+           $this->error = $this->mysqli->error;
            $this->errno = errno::FAILED_EXECUTE;
            return FALSE;
        }

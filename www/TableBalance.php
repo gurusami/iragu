@@ -36,6 +36,10 @@ class TableBalance {
        }
    }
 
+   public function setDB($mysqli) {
+       $this->mysqli = $mysqli;
+   }
+
    public function setNickFromSession() {
        if (empty($_SESSION['userid'])) {
            return false;
@@ -92,6 +96,9 @@ class TableBalance {
            $this->errno = errno::NULL_OBJECT;
            return false;
        }
+       $stmt->close();
+       $this->errno = errno::PASS;
+       return $object->balance;
    }
 
    public function addBalance($recharge_amount) {
@@ -113,7 +120,7 @@ class TableBalance {
 
        $query = "UPDATE ir_balance SET balance = balance + ? WHERE nick = ?";
 
-       if (($stmt = $mysqli->prepare($query)) == FALSE) {
+       if (($stmt = $this->mysqli->prepare($query)) == FALSE) {
            $this->error = $this->mysqli->error;
            $this->errno = errno::FAILED_PREPARE;
            return FALSE;
@@ -129,7 +136,7 @@ class TableBalance {
 
        if ($stmt->execute() == FALSE) {
            $stmt->close();
-           $this->error = $mysqli->error;
+           $this->error = $this->mysqli->error;
            $this->errno = errno::FAILED_EXECUTE;
            return FALSE;
        }

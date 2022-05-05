@@ -140,6 +140,8 @@ class PageRazorpayLanding extends IraguWebapp {
        if ($this->errno != 0) {
            return false;
        }
+       $this->tableBalance->setDB($this->mysqli);
+       $this->tablePassbook->setDB($this->mysqli);
        if (!$this->restoreSession()) {
            $this->error = "Failed to restore session";
            $this->errno = errno::FAILED_RESTORE_SESSION;
@@ -165,8 +167,12 @@ class PageRazorpayLanding extends IraguWebapp {
            $this->errno = errno::FAILED_RAZORPAY;
            return false;
        }
-       $this->increaseBalance();
-       $this->giveCashback();
+       if ($this->increaseBalance() == false) {
+           return false;
+       }
+       if ($this->giveCashback() == false) {
+           return false;
+       }
        return true;
    }
 
@@ -178,7 +184,12 @@ class PageRazorpayLanding extends IraguWebapp {
            return false;
        }
        /* Get the current balance */
-       $balance = $this->tableBalance->getCurrentBalance();
+       if (($balance = $this->tableBalance->getCurrentBalance()) == false) {
+           $this->error = $this->tableBalance->error;
+           $this->errno = 1;
+           return false;
+       }
+
        /* Add entry to passbook. */
        if ($this->tablePassbook->recharge($this->paymentObj->amount,
                                           $balance,
