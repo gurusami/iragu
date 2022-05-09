@@ -194,3 +194,12 @@ button {
    background-color: red;
    color: white;
 }
+
+#table_invite {
+   border: 1px solid var(--text-color);
+}
+
+#div_signup {
+   width: 80%;
+   margin-left: 10%;
+}

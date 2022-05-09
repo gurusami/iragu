@@ -308,10 +308,10 @@ EOF;
 
   public function displayStatus() {
      if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        if ($this->success) {
-           echo '<p> SUCCESS ' . $this->errmsg . ' </p>';
+        if ($this->errno == 0) {
+           echo '<p> SUCCESS ' . $this->error . ' </p>';
         } else {
-           echo '<p> FAILURE: ' . $this->errmsg . ' </p>';
+           echo '<p> FAILURE: ' . $this->error . ' </p>';
         }
      }
   }
@@ -373,6 +373,7 @@ EOF;
 
    /** Do cleanup at the end of page display. */
    public function cleanup() {
+       return true;
    }
 
 /******************************************************************************/
@@ -676,6 +677,39 @@ EOF;
      }
      return $this->success;
    }
+
+   public function viewPage() {
+       return true;
+   }
+
+   public function view() {
+       ir_doctype();
+       ir_copyright();
+       ir_html_open();
+       ir_head();
+       ir_body_open();
+       ir_page_top();
+       $this->displayStatus();
+       $this->viewPage();
+       ir_body_close();
+       ir_html_close();
+   }
+
+   /** This is the initialization routine. Override this in the derived
+   class. */
+   public function init() {
+       return true;
+   }
+
+   /** This is the main top-level function. */
+   public function process() {
+       if ($this->init() && $this->connect() && $this->work()) {
+           $this->errno = 0;
+       }
+       $this->view();
+       $this->cleanup();
+   }
+
 } /* class IraguWebapp */
 
 ?>

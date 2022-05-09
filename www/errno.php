@@ -33,9 +33,10 @@ class errno {
    const FAILED_PREPARE      = 53;
 
    /* The range from 100 to 149 is reserved for INVALID data. */
-   const INVALID_AMOUNT      = 100;
-   const INVALID_DBOBJ       = 101;
-   const INVALID_NICK        = 103;
+   const INVALID_AMOUNT       = 100;
+   const INVALID_DBOBJ        = 101;
+   const INVALID_NICK         = 102;
+   const INVALID_INVITE_TOKEN = 103;
 
    /* The range from 150 to 199 is reserved for MISSING data. */
    const NOT_FOUND_RECORD    = 150;
