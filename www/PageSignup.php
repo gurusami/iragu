@@ -22,9 +22,20 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 require 'autoload.php';
 
 class PageSignup extends IraguWebapp {
+   public $tableInvite;
+
+   function __construct() {
+       $this->tableInvite = new TableInvite();
+   }
 
    public function verifyInviteToken($token) {
-       if (strlen($token) != 20) {
+       $this->tableInvite->token = $token;
+       if (strlen($token) != 40) {
+           $this->error = "Invalid invitation token";
+           $this->errno = errno::INVALID_INVITE_TOKEN;
+           return false;
+       }
+       if (!$this->tableInvite->verifyToken($this->mysqli)) {
            $this->error = "Invalid invitation token";
            $this->errno = errno::INVALID_INVITE_TOKEN;
            return false;
@@ -65,8 +76,8 @@ class PageSignup extends IraguWebapp {
 <div id="div_signup">
    <form action="$url" method="post">
       <p> <label for="invite_token"> Invitation Token </label>
-          <input type="text" id="invite_token" name="invite_token" maxlength="20"
-                 size="20"
+          <input type="text" id="invite_token" name="invite_token" maxlength="40"
+                 size="40"
                  value="" required/>
       </p>
        <input type="submit" id="token" name="form_invite_token" value="Submit"/>
@@ -90,7 +101,9 @@ EOF;
    }
 
    public function cleanup() {
-       unset($_SESSION['invite_token']);
+       if (!empty($_SESSION['invite_token'])) {
+           unset($_SESSION['invite_token']);
+       }
    }
 }
 

@@ -37,6 +37,8 @@ class errno {
    const INVALID_DBOBJ        = 101;
    const INVALID_NICK         = 102;
    const INVALID_INVITE_TOKEN = 103;
+   const INVALID_EMAIL        = 104;
+   const INVALID_STATE        = 105;
 
    /* The range from 150 to 199 is reserved for MISSING data. */
    const NOT_FOUND_RECORD    = 150;

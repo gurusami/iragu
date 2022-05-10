@@ -25,9 +25,11 @@ spl_autoload_register(
                 'iraguuserrechargerazorpay' => '/15-iragu-user-recharge-razorpay.php',
                 'iraguwebapp' => '/iragu-webapp.php',
                 'loginpage' => '/index.php',
+                'pageinvite' => '/PageInvite.php',
                 'pagerazorpaylanding' => '/PageRazorpayLanding.php',
                 'pagesignup' => '/PageSignup.php',
                 'tablebalance' => '/TableBalance.php',
+                'tableinvite' => '/TableInvite.php',
                 'tablepassbook' => '/TablePassbook.php',
                 'tablerazorpaypayment' => '/TableRazorpayPayment.php',
                 'tablerazorpaysession' => '/TableRazorpaySession.php'

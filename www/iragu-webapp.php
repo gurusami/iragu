@@ -702,7 +702,10 @@ EOF;
    }
 
    /** This is the main top-level function. */
-   public function process() {
+   public function process($checkAuth = true) {
+       if ($checkAuth) {
+           $this->is_user_authenticated();
+       }
        if ($this->init() && $this->connect() && $this->work()) {
            $this->errno = 0;
        }

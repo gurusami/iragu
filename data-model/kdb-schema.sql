@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 8.0.28, for Linux (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.29, for Linux (x86_64)
 --
 -- Host: localhost    Database: kdb
 -- ------------------------------------------------------
--- Server version	8.0.28-0ubuntu0.20.04.3
+-- Server version	8.0.29-0ubuntu0.20.04.3
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -171,6 +171,26 @@ CREATE TABLE `ir_court_offers` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `ir_invite`
+--
+
+DROP TABLE IF EXISTS `ir_invite`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `ir_invite` (
+  `token` char(40) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `valid_from` date NOT NULL DEFAULT (curdate()),
+  `valid_to` date NOT NULL DEFAULT ((curdate() + interval 14 day)),
+  `invite_by` varchar(8) NOT NULL,
+  PRIMARY KEY (`token`),
+  UNIQUE KEY `email` (`email`),
+  KEY `invite_by` (`invite_by`),
+  CONSTRAINT `ir_invite_ibfk_1` FOREIGN KEY (`invite_by`) REFERENCES `ir_people` (`nick`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `ir_login`
 --
 
@@ -213,7 +233,7 @@ CREATE TABLE `ir_passbook` (
   CONSTRAINT `ir_passbook_ibfk_1` FOREIGN KEY (`nick`) REFERENCES `ir_people` (`nick`),
   CONSTRAINT `ir_passbook_ibfk_2` FOREIGN KEY (`recharge_id`) REFERENCES `ir_recharge` (`recharge_id`),
   CONSTRAINT `ir_passbook_ibfk_3` FOREIGN KEY (`booking_id`) REFERENCES `ir_booking` (`booking_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=46 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=52 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -349,7 +369,7 @@ CREATE TABLE `ir_recharge` (
   CONSTRAINT `ir_recharge_ibfk_3` FOREIGN KEY (`nick`) REFERENCES `ir_people` (`nick`),
   CONSTRAINT `ir_recharge_ibfk_4` FOREIGN KEY (`recharge_by`) REFERENCES `ir_people` (`nick`),
   CONSTRAINT `ir_recharge_ibfk_5` FOREIGN KEY (`pay_mode`) REFERENCES `ir_payment_mode` (`mode_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=61 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=88 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -435,4 +455,4 @@ CREATE TABLE `ir_user_types` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-04-24 10:05:03
+-- Dump completed on 2022-05-10 22:30:43

@@ -69,6 +69,10 @@ if (isset($_POST['username'])) {
 </div>
 
 <div class="grid-item">
+  <a href="invite.php">Invite Friends</a>
+</div>
+
+<div class="grid-item">
   <a href="logout.php">Logout</a>
 </div>
 
