@@ -233,7 +233,7 @@ CREATE TABLE `ir_passbook` (
   CONSTRAINT `ir_passbook_ibfk_1` FOREIGN KEY (`nick`) REFERENCES `ir_people` (`nick`),
   CONSTRAINT `ir_passbook_ibfk_2` FOREIGN KEY (`recharge_id`) REFERENCES `ir_recharge` (`recharge_id`),
   CONSTRAINT `ir_passbook_ibfk_3` FOREIGN KEY (`booking_id`) REFERENCES `ir_booking` (`booking_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=52 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -261,7 +261,7 @@ CREATE TABLE `ir_people` (
   `full_name` varchar(30) DEFAULT NULL,
   `gender` enum('M','F','O') DEFAULT NULL,
   `email` varchar(256) DEFAULT NULL,
-  `mobile_no` varchar(15) DEFAULT NULL,
+  `mobile_no` char(10) DEFAULT NULL,
   `aadhar` char(12) DEFAULT NULL,
   `dob` date DEFAULT NULL,
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -455,4 +455,4 @@ CREATE TABLE `ir_user_types` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-05-10 22:30:43
+-- Dump completed on 2022-05-14 23:18:09
