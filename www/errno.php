@@ -25,6 +25,7 @@ class errno {
 
    /* The range 10 to 49 is reserved for unclassified errors. */
    const FAILED_RESTORE_SESSION = 10;
+   const MISMATCH_PASSWD        = 11;
 
    /* The range 50 to 99 is reserved for DB failures. */
    const FAILED_BINDPARAM    = 50;
@@ -48,6 +49,7 @@ class errno {
    const MISSING_FULLNAME    = 153;
    const MISSING_EMAIL       = 154;
    const MISSING_MOBILE      = 155;
+   const MISSING_PASSWD      = 156;
 
    /* The range 200 to 249 is reserved for Razorpay errors */
    const FAILED_RAZORPAY             = 200;

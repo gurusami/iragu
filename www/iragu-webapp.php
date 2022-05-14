@@ -22,6 +22,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 /* Details to connect to MySQL.  The user l2admin can do SELECT, INSERT,
 UPDATE, DELETE operations on all tables in kdb database. */
 
+require 'autoload.php';
 
 include '01-iragu-global-utility.php';
 
@@ -719,6 +720,10 @@ EOF;
        }
        $this->view();
        $this->cleanup();
+   }
+
+   function paiseToRupees($paise) {
+       return number_format((float) $paise / 100, 2, '.', '');
    }
 
 } /* class IraguWebapp */

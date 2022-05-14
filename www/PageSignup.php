@@ -31,6 +31,7 @@ require 'autoload.php';
    $_SESSION['signup_mobile_otp']
    $_SESSION['signup_fullname']
    $_SESSION['signup_nick']
+   $_SESSION['signup_passwd']
    $_SESSION['signup_table_invite_rowobj']
    $_SESSION['signup_offer']
    $_SESSION['signup_cashback']
@@ -40,6 +41,7 @@ require 'autoload.php';
 
 class PageSignup extends IraguWebapp {
    public $tableInvite;
+   public $tableBalance;
 
    function __construct() {
        $this->tableInvite = new TableInvite();
@@ -154,6 +156,36 @@ class PageSignup extends IraguWebapp {
        return true;
    }
 
+   public function collectPasswd() {
+       if (!empty($_SESSION['signup_passwd'])) {
+           /* The user passwd is already part of session. */
+           return true;
+       }
+       if (empty($_POST['form_passwd'])) {
+           return false;
+       }
+       if (strcmp($_POST['form_passwd'], "Submit") != 0) {
+           return false;
+       }
+       if (empty($_POST['signup_passwd_1'])) {
+           $this->errno = errno::MISSING_PASSWD;
+           $this->error = "Password is missing";
+           return false;
+       }
+       if (empty($_POST['signup_passwd_2'])) {
+           $this->errno = errno::MISSING_PASSWD;
+           $this->error = "Confirmation password is missing";
+           return false;
+       }
+       if (strcmp($_POST['signup_passwd_1'], $_POST['signup_passwd_2']) != 0) {
+           $this->errno = errno::MISMATCH_PASSWD;
+           $this->error = "Passwords didn't match";
+           return false;
+       }
+       $_SESSION['signup_passwd'] = $_POST['signup_passwd_1'];
+       return true;
+   }
+
    public function collectUserNick() {
        if (!empty($_SESSION['signup_nick'])) {
            /* The user nick name is already part of session. */
@@ -176,6 +208,9 @@ class PageSignup extends IraguWebapp {
    }
 
    public function collectMobileOTP() {
+       // This step is disabled for now.
+       return true;
+
        if (!empty($_SESSION['signup_mobile_otp'])) {
            return true;
        }
@@ -217,16 +252,7 @@ class PageSignup extends IraguWebapp {
        return false;
    }
 
-   public function confirm() {
-       if (!isset($_SESSION['signup_confirm'])) {
-           return false;
-       }
-       if (!isset($_POST['form_confirm'])) {
-           return false;
-       }
-       if (strcmp($_POST['form_confirm'], "Confirm") != 0 ) {
-           return false;
-       }
+   public function insertTablePeople() {
        $tablePeople = new TablePeople();
        $tablePeople->nick      = $_SESSION['signup_nick'];
        $tablePeople->full_name = $_SESSION['signup_fullname'];
@@ -243,6 +269,96 @@ class PageSignup extends IraguWebapp {
            $this->error .= "Insert failed (errno: $this->errno)";
            return false;
        }
+       return true;
+   }
+
+   public function insertTableLogin() {
+       $tableLogin = new TableLogin();
+       $tableLogin->nick = $_SESSION['signup_nick'];
+       $tableLogin->token = $_SESSION['signup_passwd'];
+       if ($tableLogin->insert($this->mysqli) == false) {
+           $this->errno = $tableLogin->errno;
+           $this->error = $tableLogin->error;
+           $this->error .= "Insert failed (errno: $this->errno)";
+           return false;
+       }
+       return true;
+   }
+
+   public function updateTableBalance() {
+       $cash = $_SESSION['signup_cashback'];
+       if ($this->tableBalance->addBalance($cash) == false) {
+           $this->errno = $tableLogin->errno;
+           $this->error = $tableLogin->error;
+           $this->error .= " (errno: $this->errno)";
+           $this->error .= " - PageSignup::updateTableBalance()";
+           return false;
+       }
+       return true;
+   }
+
+   public function insertPassbook() {
+       $cash = $_SESSION['signup_cashback'];
+       $book = new TablePassbook($this->mysqli);
+       $book->nick = $_SESSION['signup_nick'];
+       if ($book->registerCashback($this->mysqli, $cash, $cash) == false) {
+           $this->error = $book->error;
+           $this->errno = $book->errno;
+           $this->error .= " (errno: $this->errno)";
+           $this->error .= " - PageSignup::insertPassbook()";
+           return false;
+       }
+       return true;
+   }
+
+   public function insertTableBalance() {
+       $tableBalance = new TableBalance($this->mysqli);
+       $tableBalance->nick = $_SESSION['signup_nick'];
+       $tableBalance->balance = 0;
+       if ($tableBalance->insert($this->mysqli) == false) {
+           $this->errno = $tableBalance->errno;
+           $this->error = $tableBalance->error;
+           $this->error .= "Insert failed (errno: $this->errno)";
+           return false;
+       }
+       $this->tableBalance = $tableBalance;
+       return true;
+   }
+
+   public function confirm() {
+       if (!isset($_SESSION['signup_confirm'])) {
+           return false;
+       }
+       if (!isset($_POST['form_confirm'])) {
+           return false;
+       }
+       if (strcmp($_POST['form_confirm'], "Confirm") != 0 ) {
+           return false;
+       }
+       $this->startTrx();
+       if ($this->insertTablePeople() == false) {
+           $this->rollbackTrx();
+           return false;
+       }
+       if ($this->insertTableLogin() == false) {
+           $this->rollbackTrx();
+           return false;
+       }
+       if ($this->insertTableBalance() == false) {
+           $this->rollbackTrx();
+           return false;
+       }
+       if ($_SESSION['signup_cashback'] > 0) {
+           if ($this->updateTableBalance() == false) {
+               $this->rollbackTrx();
+               return false;
+           }
+           if ($this->insertPassbook() == false) {
+               $this->rollbackTrx();
+               return false;
+           }
+       }
+       $this->commitTrx();
        return true;
    }
 
@@ -277,6 +393,9 @@ class PageSignup extends IraguWebapp {
            return false;
        }
        if ($this->collectUserNick() == false) {
+           return false;
+       }
+       if ($this->collectPasswd() == false) {
            return false;
        }
        if ($this->collectOffer() == false) {
@@ -378,7 +497,7 @@ EOF;
            $id = $offerObj->offer_id;
            $title = "Available Registration Offer";
            $_SESSION['signup_offer_obj'] = $offerObj;
-           $_SESSION['signup_cashback'] = $offerObj->cashback;
+           $_SESSION['signup_cashback'] = $offerObj->cash_back;
        } else {
            $_SESSION['signup_cashback'] = 0;
        }
@@ -390,6 +509,24 @@ EOF;
                maxlength="8" size="8" value="$id" readonly/>
       </p>
        <input type="submit" name="form_offer" value="Submit"/>
+   </form>
+</div>
+EOF;
+   }
+
+   public function getPasswd() {
+       $url = $this->getSelfURL();
+       echo <<<EOF
+<div id="div_form">
+   <form action="$url" method="post">
+       <p> <label for="elem_passwd_1"> Choose Password </label>
+           <input type="password" id="elem_passwd_1" name="signup_passwd_1"
+               maxlength="20" size="20" value="" required/>
+           <label for="elem_passwd_2"> Confirm Password </label>
+           <input type="password" id="elem_passwd_2" name="signup_passwd_2"
+               maxlength="20" size="20" value="" required/>
+      </p>
+       <input type="submit" name="form_passwd" value="Submit"/>
    </form>
 </div>
 EOF;
@@ -411,6 +548,7 @@ EOF;
    }
 
    public function getConfirmation() {
+       $cash  = $this->paiseToRupees($_SESSION['signup_cashback']);
        $data = array();
        $data['Invite Token']  = $_SESSION['signup_token'];
        $data['Email Address'] = $_SESSION['signup_email'];
@@ -443,12 +581,15 @@ EOF;
            $this->getEmail();
        } else if (empty($_SESSION['signup_mobile'])) {
            $this->getMobile();
-       } else if (empty($_SESSION['signup_mobile_otp'])) {
+       } else if (false && empty($_SESSION['signup_mobile_otp'])) {
+           // This step is disabled for now.
            $this->getMobileOTP();
        } else if (empty($_SESSION['signup_fullname'])) {
            $this->getFullName();
        } else if (empty($_SESSION['signup_nick'])) {
            $this->getUserNick();
+       } else if (empty($_SESSION['signup_passwd'])) {
+           $this->getPasswd();
        } else if (!isset($_SESSION['signup_offer'])) {
            $this->getOffer();
        } else if (!isset($_SESSION['signup_confirm'])) {
@@ -466,6 +607,7 @@ EOF;
            unset($_SESSION['signup_cashback']);
            unset($_SESSION['signup_offer_obj']);
            unset($_SESSION['signup_confirm']);
+           unset($_SESSION['signup_passwd']);
        }
    }
 

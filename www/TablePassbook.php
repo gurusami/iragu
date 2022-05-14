@@ -155,6 +155,57 @@ class TablePassbook {
 
        return true;
    }
+
+   public function registerCashback($mysqli, $cashback, $balance) {
+       if (is_null($mysqli)) {
+           $this->error = "DB Connection object missing";
+           $this->errno = errno::INVALID_DBOBJ;
+           return false;
+       }
+       if (empty($balance)) {
+           $this->error = "Invalid balance amount";
+           $this->errno = errno::INVALID_AMOUNT;
+           return false;
+       }
+       if (empty($cashback)) {
+           $this->error = "Invalid cashback amount";
+           $this->errno = errno::INVALID_AMOUNT;
+           return false;
+       }
+       if (empty($this->nick)) {
+           $this->error = "Invalid nick";
+           $this->errno = errno::INVALID_NICK;
+           return false;
+       }
+       $trx_info = "Cashback for Registration: " . $this->nick;
+       $query = "INSERT INTO ir_passbook (nick, trx_info, credit, " .
+           " running_total) VALUES (?, ?, ?, ?);";
+
+       if (($stmt = $mysqli->prepare($query)) == FALSE) {
+           $this->error = $mysqli->error;
+           $this->errno = errno::FAILED_PREPARE;
+           return FALSE;
+       }
+
+       if ($stmt->bind_param('ssii', $this->nick,
+                                     $trx_info,
+                                     $cashback,
+                                     $balance) == FALSE) {
+           $this->error = $stmt->error;
+           $this->errno = errno::FAILED_BINDPARAM;
+           $stmt->close();
+           return FALSE;
+       }
+
+       if ($stmt->execute() == FALSE) {
+           $this->error = $stmt->error;
+           $this->errno = errno::FAILED_EXECUTE;
+           $stmt->close();
+           return FALSE;
+       }
+
+       return true;
+   }
 }
 
 ?>

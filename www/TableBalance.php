@@ -143,6 +143,30 @@ class TableBalance {
 
        return true;
    }
+
+   public function insert($mysqli) {
+      $query = "INSERT INTO ir_balance (nick, balance) VALUES (?, ?)";
+      if (($stmt = $mysqli->prepare($query)) == false) {
+         $this->error = $mysqli->error;
+         $this->errno = errno::FAILED_PREPARE;
+         return false;
+      }
+
+      if ($stmt->bind_param('si', $this->nick, $this->balance) == false) {
+         $this->error = $stmt->error;
+         $this->errno = errno::FAILED_BINDPARAM;
+         return false;
+      }
+
+      if ($stmt->execute() == false) {
+         $this->error = $stmt->error;
+         $this->errno = errno::FAILED_EXECUTE;
+         return false;
+      }
+
+      $stmt->close();
+      return true;
+   }
 }
 
 ?>
