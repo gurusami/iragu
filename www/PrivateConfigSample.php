@@ -18,14 +18,14 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 *******************************************************************************/
-/* Iragu: User: Registration done by Customer themselves. */
 
-require 'autoload.php';
-
-session_start();
-$page = new PageSignup();
-/* User need not be logged in to access this page. */
-$checkAuth = false;
-$page->process($checkAuth);
+/* Copy this file into PrivateConfig.php
+   Change the class name to PrivateConfig
+   Provide correct values for various constants. */
+class PrivateConfigSample {
+   const DB_PASSWD = '';
+   const TEXTLOCAL_APIKEY = '';
+};
 
 ?>
+

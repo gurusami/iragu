@@ -18,14 +18,38 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 *******************************************************************************/
-/* Iragu: User: Registration done by Customer themselves. */
 
 require 'autoload.php';
 
-session_start();
-$page = new PageSignup();
-/* User need not be logged in to access this page. */
-$checkAuth = false;
-$page->process($checkAuth);
+/** A class to handle database operations on table ir_register_offers. */
+class TableRegisterOffer {
+   public $error;
+   public $errno;
+
+   public function getOfferDetails($mysqli) {
+       $query = "SELECT * FROM ir_register_offers WHERE CURRENT_DATE " .
+                "BETWEEN offer_from AND offer_to LIMIT 1;";
+       if (($result = $mysqli->query($query)) == false) {
+           return false;
+       }
+       if (is_null($result)) {
+           return false;
+       }
+       if ($result->num_rows == 0) {
+           return false;
+       }
+       if (($rowObj = $result->fetch_obj()) == false) {
+           return false;
+       }
+       if (is_null($rowObj)) {
+           return false;
+       }
+       return $rowObj;
+   }
+
+}
 
 ?>
+
+
+

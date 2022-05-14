@@ -39,10 +39,15 @@ class errno {
    const INVALID_INVITE_TOKEN = 103;
    const INVALID_EMAIL        = 104;
    const INVALID_STATE        = 105;
+   const INVALID_OTP          = 106;
 
    /* The range from 150 to 199 is reserved for MISSING data. */
    const NOT_FOUND_RECORD    = 150;
    const NULL_OBJECT         = 151;
+   const MISSING_NICK        = 152;
+   const MISSING_FULLNAME    = 153;
+   const MISSING_EMAIL       = 154;
+   const MISSING_MOBILE      = 155;
 
    /* The range 200 to 249 is reserved for Razorpay errors */
    const FAILED_RAZORPAY             = 200;
@@ -51,6 +56,9 @@ class errno {
    const INVALID_RAZORPAY_PAYMENT_ID = 203;
    const MISSING_RAZORPAY_SIGNATURE  = 204;
    const MISSING_RAZORPAY_PAYMENT_OBJ  = 205;
+
+   /* The range 250 to 299 is reserved for duplicate errors. */
+   const DUPLICATE_NICK    = 250;
 };
 
 ?>

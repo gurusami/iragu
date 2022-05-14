@@ -262,7 +262,7 @@ EOF;
        $dbhost = "localhost";
        $dbuser = 'l2admin';
        $dbname = 'kdb';
-       $dbpasswd = '#TNExit2030#';
+       $dbpasswd = PrivateConfig::DB_PASSWD;
 
        if (!isset($dbhost) || is_null($dbhost)) {
            $this->errno = self::ERRNO_HOSTNAME_INVALID;
@@ -307,11 +307,19 @@ EOF;
   }
 
   public function displayStatus() {
+     $show = false;
+     if (!empty($_SESSION['show_status']) && $_SESSION['show_status']) {
+       $show = true;
+     }
+
      if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if ($this->errno == 0) {
-           echo '<p> SUCCESS ' . $this->error . ' </p>';
+           if ($show) {
+               echo '<p> SUCCESS ' . $this->error . ' </p>';
+           }
         } else {
-           echo '<p> FAILURE: ' . $this->error . ' </p>';
+           echo '<div id="div_status"> <p id="p_error"> FAILURE: ' .
+               $this->error .  ' </p> </div>';
         }
      }
   }

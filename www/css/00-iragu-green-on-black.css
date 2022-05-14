@@ -6,6 +6,7 @@
   --background-login: black;
   --background-2: #181818;
   --text-color: MediumSpringGreen;
+  --error-text-color: Crimson;
   --FF: "Lucida Console", "Courier New", monospace;
   font-size: 2em; 
 }
@@ -202,4 +203,27 @@ button {
 #div_signup {
    width: 80%;
    margin-left: 10%;
+}
+
+#div_form_fullname {
+   width: 80%;
+   margin-left: 10%;
+}
+
+#div_form {
+   width: 80%;
+   margin-left: 10%;
+}
+
+#div_status {
+   width: 80%;
+   margin-left: 10%;
+   color: var(--error-text-color);
+   border: 1px solid var(--error-text-color);
+   padding: 0px;
+}
+
+#p_error {
+   padding: 0px;
+   text-align: center;
 }

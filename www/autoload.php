@@ -28,11 +28,15 @@ spl_autoload_register(
                 'pageinvite' => '/PageInvite.php',
                 'pagerazorpaylanding' => '/PageRazorpayLanding.php',
                 'pagesignup' => '/PageSignup.php',
+                'privateconfig' => '/PrivateConfig.php',
                 'tablebalance' => '/TableBalance.php',
                 'tableinvite' => '/TableInvite.php',
                 'tablepassbook' => '/TablePassbook.php',
+                'tablepeople' => '/TablePeople.php',
                 'tablerazorpaypayment' => '/TableRazorpayPayment.php',
-                'tablerazorpaysession' => '/TableRazorpaySession.php'
+                'tablerazorpaysession' => '/TableRazorpaySession.php',
+                'tableregisteroffer' => '/TableRegisterOffer.php',
+                'textlocal' => '/TextLocal.php'
             );
         }
         $cn = strtolower($class);

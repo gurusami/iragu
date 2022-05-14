@@ -21,57 +21,46 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 require 'autoload.php';
 
-/** A class to handle database operations on table ir_invite. */
-class TableInvite {
+/** A class to handle database operations on table ir_people. */
+class TablePeople {
+   public $nick;
+   public $full_name;
+   public $email;
+   public $mobile_no;
+   public $offer_id;
+   public $balance;
    public $error;
    public $errno;
-   public $invite_by;
-   public $email;
-   public $token;
 
-   function __construct() {
-       $this->errno = errno::PASS;
-   }
-
-   public function createToken() {
-       $this->token = bin2hex(random_bytes(20));
-       return $this->token;
-   }
-
-   public function verifyToken($mysqli) {
-       if (empty($this->token)) {
-           $this->errno = errno::INVALID_INVITE_TOKEN;
-           $this->error = "Invalid invitation token";
-           return false;
-       }
-       $query = "SELECT * FROM ir_invite WHERE token = ? AND CURRENT_DATE " .
-                " BETWEEN valid_from AND valid_to";
+   public function get($mysqli, $nick) {
+       $query = 'SELECT * FROM ir_people WHERE nick = ?';
        if (($stmt = $mysqli->prepare($query)) == FALSE) {
-           $this->error = $this->mysqli->error;
+           $this->error = $mysqli->error;
            $this->errno = errno::FAILED_PREPARE;
            return FALSE;
        }
-       if ($stmt->bind_param('s', $this->token) == FALSE) {
+       $this->nick = $nick;
+       if ($stmt->bind_param('s', $this->nick) == FALSE) {
            $stmt->close();
-           $this->error = $this->mysqli->error;
+           $this->error = $mysqli->error;
            $this->errno = errno::FAILED_BINDPARAM;
            return FALSE;
        }
        if ($stmt->execute() == FALSE) {
            $stmt->close();
-           $this->error = $this->mysqli->error;
+           $this->error = $mysqli->error;
            $this->errno = errno::FAILED_EXECUTE;
            return FALSE;
        }
        if (($result = $stmt->get_result()) == false) {
            $stmt->close();
-           $this->error = $this->mysqli->error;
+           $this->error = $mysqli->error;
            $this->errno = errno::NOT_FOUND_RECORD;
            return false;
        }
        if (($object = $result->fetch_object()) == false) {
            $stmt->close();
-           $this->error = $this->mysqli->error;
+           $this->error = $mysqli->error;
            $this->errno = errno::FAILED_FETCH_OBJECT;
            return false;
        }
@@ -79,55 +68,59 @@ class TableInvite {
    }
 
    public function insert($mysqli) {
-       if ($this->errno != errno::PASS) {
+       if (empty($this->nick)) {
+           $this->errno = errno::MISSING_NICK;
+           $this->error = "Missing User Nick";
            return false;
        }
-
-       if (empty($this->token)) {
-           $this->errno = errno::INVALID_INVITE_TOKEN;
-           $this->error = "Invalid invitation token";
+       if (empty($this->full_name)) {
+           $this->errno = errno::MISSING_FULLNAME;
+           $this->error = "Missing User Fullname";
            return false;
        }
-
        if (empty($this->email)) {
-           $this->errno = errno::INVALID_EMAIL;
-           $this->error = "Invalid email address";
+           $this->errno = errno::MISSING_EMAIL;
+           $this->error = "Missing User Email";
+           return false;
+       }
+       if (empty($this->mobile_no)) {
+           $this->errno = errno::MISSING_MOBILE;
+           $this->error = "Missing User Mobile Number";
            return false;
        }
 
-       if (empty($this->invite_by)) {
-           $this->errno = errno::INVALID_NICK;
-           $this->error = "Invalid userid or nick name";
-           return false;
-       }
-
-       $query = "INSERT INTO ir_invite (token, email, invite_by) " . 
-           " VALUES (?, ?, ?)";
+       $query = "INSERT INTO ir_people (nick, full_name, email, mobile_no, " .
+           "offer_id, registered_by) VALUES (LOWER(TRIM(?)), ?, ?, ?, ?, ?)";
 
        if (($stmt = $mysqli->prepare($query)) == FALSE) {
-           $this->error = $mysqli->error;
            $this->errno = errno::FAILED_PREPARE;
-           return false;
+           $this->error = $mysqli->error;
+           return FALSE;
        }
 
-       if ($stmt->bind_param('sss', $this->token,
-                                    $this->email,
-                                    $this->invite_by) == FALSE) {
+       if ($stmt->bind_param('ssssss', $this->nick,
+                                       $this->full_name,
+                                       $this->email,
+                                       $this->mobile_no,
+                                       $this->offer_id,
+                                       $this->nick) == FALSE) {
            $stmt->close();
            $this->error = $mysqli->error;
            $this->errno = errno::FAILED_BINDPARAM;
-           return false;
+           return FALSE;
        }
 
        if ($stmt->execute() == FALSE) {
-           $stmt->close();
-           $this->error = $mysqli->error;
+           $this->error = $stmt->error;
            $this->errno = errno::FAILED_EXECUTE;
-           return false;
+           $stmt->close();
+           return FALSE;
        }
-       $stmt->close();
-       return true;
+
+       return TRUE;
    }
-};
+}
 
 ?>
+
+
