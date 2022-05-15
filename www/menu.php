@@ -18,15 +18,10 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 *******************************************************************************/
-/* Iragu: Top */
+require 'autoload.php';
+
+$page = new PageMenu();
+$page->process();
 
 ?>
-
-<div style="width: 100%; border: 1px solid var(--text-color);">
-  <ul class="ul-top-menu">
-    <li class="li-top-menu"> <a href="menu.php">Home</a> </li>
-    <li class="li-top-menu"> User: <?php echo $_SESSION['userid']; ?> </li>
-    <li class="li-top-menu"> <a href="logout.php">Logout</a> </li>
-  </ul>
-</div>
 

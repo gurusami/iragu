@@ -64,11 +64,7 @@ class LoginPage extends IraguWebapp {
 
 if (isset($_SESSION['nick']) && isset($_SESSION['usertype'])) {
    /* Redirect browser */
-   if (strcmp($_SESSION['usertype'], "admin") == 0) {
-       header('Location: ' . '12-iragu-admin-menu.php');
-   } else {
-       header('Location: ' . '13-iragu-user-menu.php');
-   }
+   header('Location: menu.php');
    exit();
 }
 
@@ -80,13 +76,8 @@ if (isset($_POST['username'])) {
 
    if ($page->pass) {
      /* Redirect browser */
-     if (strcmp($_SESSION['usertype'], "admin") == 0) {
-        header('Location: ' . '12-iragu-admin-menu.php');
-     } else {
-        header('Location: ' . '13-iragu-user-menu.php');
-     }
-     exit();
-   
+       header('Location: menu.php');
+       exit();
    }
 }
 

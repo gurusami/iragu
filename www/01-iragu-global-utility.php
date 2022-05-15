@@ -110,11 +110,7 @@ EOF;
 }
 
 function ir_home_link() {
-   if (strcmp($_SESSION['usertype'],"admin") == 0) {
-    $menu = '<a href="12-iragu-admin-menu.php">Home</a>';
-   } else if (strcmp($_SESSION['usertype'],"user") == 0) {
-    $menu = '<a href="13-iragu-user-menu.php">Home</a>';
-   }
+   $menu = '<a href="menu.php">Home</a>';
    return $menu;
 }
 

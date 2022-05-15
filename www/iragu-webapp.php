@@ -687,6 +687,7 @@ EOF;
      return $this->success;
    }
 
+   /** This will be overloaded by the derived classes. */
    public function viewPage() {
        return true;
    }
@@ -724,6 +725,13 @@ EOF;
 
    function paiseToRupees($paise) {
        return number_format((float) $paise / 100, 2, '.', '');
+   }
+
+   public function isAdmin() {
+       if (empty($_SESSION['usertype'])) {
+           return false;
+       }
+       return (strcmp($_SESSION['usertype'],"admin") == 0);
    }
 
 } /* class IraguWebapp */
