@@ -712,11 +712,16 @@ EOF;
    }
 
    /** This is the main top-level function. */
-   public function process($checkAuth = true) {
+   public function process($checkAuth = true, $beAdmin = false) {
        if ($checkAuth) {
            $this->is_user_authenticated();
        }
-       if ($this->init() && $this->connect() && $this->work()) {
+       if ($beAdmin && !$this->isAdmin()) {
+           $this->errno = errno::UNAUTHORIZED;
+           $this->errno = "Not authorized";
+       }
+       if ($this->errno == errno::PASS && 
+           $this->init() && $this->connect() && $this->work()) {
            $this->errno = 0;
        }
        $this->view();

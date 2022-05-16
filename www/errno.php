@@ -26,12 +26,14 @@ class errno {
    /* The range 10 to 49 is reserved for unclassified errors. */
    const FAILED_RESTORE_SESSION = 10;
    const MISMATCH_PASSWD        = 11;
+   const UNAUTHORIZED           = 12;
 
    /* The range 50 to 99 is reserved for DB failures. */
    const FAILED_BINDPARAM    = 50;
    const FAILED_EXECUTE      = 51;
    const FAILED_FETCH_OBJECT = 52;
    const FAILED_PREPARE      = 53;
+   const FAILED_LOGIN        = 54;
 
    /* The range from 100 to 149 is reserved for INVALID data. */
    const INVALID_AMOUNT       = 100;

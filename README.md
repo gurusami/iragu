@@ -24,3 +24,9 @@ https://phpunit.de.
 
 Use the following command to run the unit tests:
 phpunit --bootstrap www/autoload.php tests
+
+## Features
+
+-  Provides an interface for the user to sign up themselves.  But to sign up,
+   the user needs an invitation token.
+

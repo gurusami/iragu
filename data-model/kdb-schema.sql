@@ -130,6 +130,23 @@ CREATE TABLE `ir_campus` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `ir_captcha`
+--
+
+DROP TABLE IF EXISTS `ir_captcha`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `ir_captcha` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `challenge` varchar(128) DEFAULT NULL,
+  `response` varchar(64) DEFAULT NULL,
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_by` varchar(8) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `ir_court`
 --
 
@@ -455,4 +472,4 @@ CREATE TABLE `ir_user_types` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-05-14 23:18:09
+-- Dump completed on 2022-05-16 22:38:43

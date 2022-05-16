@@ -44,6 +44,7 @@ EOF;
        $this->viewGridItem("06-iragu-admin-bookings-open.php", "Open Bookings");
        $this->viewGridItem("07-iragu-check-availability.php", "Check Availability");
        $this->viewGridItem("08-iragu-admin-court-booking.php", "Book Court (Admin)");
+       $this->viewGridItem("captcha.php", "Add Captcha Challenge (Admin)");
    }
 
    public function viewUserMenu() {

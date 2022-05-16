@@ -21,13 +21,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 require 'autoload.php';
 
-session_start();
-if (isset($_SESSION['nick']) && isset($_SESSION['usertype'])) {
-   /* Redirect browser */
-   header('Location: menu.php');
-   exit();
-}
+$page = new PageChallengeResponse();
+$page->process(true, true);
 
-$page = new PageLogin();
-$page->process(false, false);
+?>
 
