@@ -27,11 +27,14 @@ class PageLogin extends IraguWebapp {
        if (isset($_POST['username'])) {
            $_SESSION['login_username'] = $_POST['username'];
            $_SESSION['login_token']    = $_POST['token'];
-       } else if (!empty($_POST['login_challenge'])) {
-           $tableCaptcha = new TableCaptcha();
-           if ($tableCaptcha->verify($_POST['login_challenge_id'],
-                       $_POST['login_response'],
-                       $_SESSION['login_challenge_obj'])) {
+       } else if (!empty($_POST['form_captcha']) &&
+                   strcmp($_POST['form_captcha'], "Submit") == 0) {
+           /* Captcha form is submitted. */
+           $obj = $_SESSION['login_challenge_obj'];
+           if (empty($obj->challenge) || empty($obj->response)) {
+               unset($_SESSION['login_challenge_obj']);
+               unset($_SESSION['login_challenge']);
+           } else if ($obj->verify($_POST['login_response'])) {
                if ($this->validate($_SESSION['login_username'],
                                    $_SESSION['login_token'])) {
                    header('Location: menu.php');
@@ -39,6 +42,7 @@ class PageLogin extends IraguWebapp {
                } else {
                    unset($_SESSION['login_username']);
                    unset($_SESSION['login_token']);
+                   unset($_SESSION['login_challenge']);
                    $this->error = "Login failed";
                    $this->errno = errno::FAILED_LOGIN;
                    return false;
@@ -85,7 +89,7 @@ class PageLogin extends IraguWebapp {
        $tableCaptcha = new TableCaptcha();
        $obj = $tableCaptcha->getRandomChallenge($this->mysqli);
        $_SESSION['login_challenge_obj'] = $obj;
-       $challenge_id = $obj->id;
+       $challenge_id = 0;
        $challenge = $obj->challenge;
        $url = $this->getSelfURL();
        echo <<<EOF

@@ -18,11 +18,24 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 *******************************************************************************/
+class Challenge {
+   public $challenge;
+   public $response;
 
-require 'autoload.php';
+   function __construct($c, $r) {
+       $this->challenge = $c;
+       $this->response = $r;
+   }
 
-$page = new PageCaptcha();
-$page->process(true, true);
+   public function verify($response) {
+       $exp_responses = explode(",", $this->response);
+       foreach ($exp_responses as $expected) {
+           if (strcmp($expected, $response) == 0) {
+               return true;
+           }
+       }
+       return false;
+   }
+};
 
 ?>
-

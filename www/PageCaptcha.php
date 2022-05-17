@@ -21,7 +21,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 require 'autoload.php';
 
-class PageChallengeResponse extends IraguWebapp {
+class PageCaptcha extends IraguWebapp {
    public $tableCaptcha;
 
    function __construct() {

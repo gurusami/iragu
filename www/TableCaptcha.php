@@ -30,16 +30,6 @@ class TableCaptcha {
    public $error;
    public $errno;
 
-   public function verify($id, $response, $obj) {
-       $exp_responses = explode(",", $obj->response);
-       foreach ($exp_responses as $expected) {
-           if (strcmp($expected, $response) == 0) {
-               return true;
-           }
-       }
-       return false;
-   }
-
    public function getChallenge($mysqli, $id) {
        $query = "SELECT * FROM ir_captcha WHERE id = ?";
        if (($stmt = $mysqli->prepare($query)) == FALSE) {
@@ -74,11 +64,66 @@ class TableCaptcha {
        return $object;
    }
 
-   public function getRandomChallenge($mysqli) {
+   /** Get type 1 of captcha. */
+   public function getType1() {
+       $c = "If arranged in ascending order, which will be first: ";
+       $size = random_int(3, 5);
+       $smallest = 2000;
+       $numbers = array();
+       for ($i = 0; $i < $size; $i++) {
+           $numbers[$i] = random_int(1, 1000);
+           if ($numbers[$i] < $smallest) {
+               $smallest = $numbers[$i];
+           }
+       }
+       $c .= implode(", ", $numbers);
+       $r = $smallest;
+       return new Challenge($c, $r);
+   }
+
+   /** Get type 2 of captcha. */
+   public function getType2() {
+       $c = "If arranged in ascending order, which will be last: ";
+       $size = random_int(3, 5);
+       $largest = 0;
+       $numbers = array();
+       for ($i = 0; $i < $size; $i++) {
+           $numbers[$i] = random_int(1, 1000);
+           if ($numbers[$i] > $largest) {
+               $largest = $numbers[$i];
+           }
+       }
+       $c .= implode(", ", $numbers);
+       $r = $largest;
+       return new Challenge($c, $r);
+   }
+
+   public function getFromDB($mysqli) {
        $maxId = $this->maxValue($mysqli);
+       if ($maxId == false) {
+           return $this->getType1();
+       }
        $id = random_int(1, $maxId);
        $object = $this->getChallenge($mysqli, $id);
-       return $object;
+       return new Challenge($object->challenge, $object->response);
+   }
+
+   public function getRandomChallenge($mysqli) {
+       $choice = random_int(1, 3);
+       $obj = null;
+       switch ($choice) {
+           case 1:
+               $obj = $this->getType1();
+               break;
+           case 2:
+               $obj = $this->getType2();
+               break;
+           case 3:
+           default:
+               $obj = $this->getFromDB($mysqli);
+               break;
+       }
+       return $obj;
    }
 
    public function maxValue($mysqli) {

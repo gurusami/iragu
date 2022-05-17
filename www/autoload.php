@@ -7,6 +7,7 @@ spl_autoload_register(
         static $classes = null;
         if ($classes === null) {
             $classes = array(
+                'challenge' => '/Challenge.php',
                 'errno' => '/errno.php',
                 'iraguadminaddcampus' => '/04-iragu-admin-add-campus.php',
                 'iraguadminaddcourt' => '/05-iragu-admin-court-add.php',
@@ -22,7 +23,7 @@ spl_autoload_register(
                 'iraguuserrecharge' => '/20-iragu-user-recharge.php',
                 'iraguuserrechargerazorpay' => '/15-iragu-user-recharge-razorpay.php',
                 'iraguwebapp' => '/iragu-webapp.php',
-                'pagechallengeresponse' => '/PageChallengeResponse.php',
+                'pagecaptcha' => '/PageCaptcha.php',
                 'pageinvite' => '/PageInvite.php',
                 'pagelogin' => '/PageLogin.php',
                 'pagemenu' => '/PageMenu.php',
