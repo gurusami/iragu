@@ -25,6 +25,7 @@ require 'autoload.php';
 class TableBalance {
    public $nick;
    public $balance;
+   public $bookingCost;
    public $error;
    public $errno;
    public $mysqli;
@@ -60,22 +61,22 @@ class TableBalance {
            return false;
        }
        $query = "SELECT * FROM ir_balance WHERE nick = ?";
-       if (($stmt = $this->mysqli->prepare($query)) == FALSE) {
+       if (($stmt = $this->mysqli->prepare($query)) == false) {
            $this->error = $this->mysqli->error;
            $this->errno = errno::FAILED_PREPARE;
-           return FALSE;
+           return false;
        }
-       if ($stmt->bind_param('s', $this->nick) == FALSE) {
+       if ($stmt->bind_param('s', $this->nick) == false) {
            $stmt->close();
            $this->error = $this->mysqli->error;
            $this->errno = errno::FAILED_BINDPARAM;
-           return FALSE;
+           return false;
        }
-       if ($stmt->execute() == FALSE) {
+       if ($stmt->execute() == false) {
            $stmt->close();
            $this->error = $this->mysqli->error;
            $this->errno = errno::FAILED_EXECUTE;
-           return FALSE;
+           return false;
        }
        if (($result = $stmt->get_result()) == false) {
            $stmt->close();
@@ -120,25 +121,25 @@ class TableBalance {
 
        $query = "UPDATE ir_balance SET balance = balance + ? WHERE nick = ?";
 
-       if (($stmt = $this->mysqli->prepare($query)) == FALSE) {
+       if (($stmt = $this->mysqli->prepare($query)) == false) {
            $this->error = $this->mysqli->error;
            $this->errno = errno::FAILED_PREPARE;
-           return FALSE;
+           return false;
        }
 
        if ($stmt->bind_param('is', $recharge_amount,
-                                   $this->nick) == FALSE) {
+                                   $this->nick) == false) {
            $stmt->close();
            $this->error = $this->mysqli->error;
            $this->errno = errno::FAILED_BINDPARAM;
-           return FALSE;
+           return false;
        }
 
-       if ($stmt->execute() == FALSE) {
+       if ($stmt->execute() == false) {
            $stmt->close();
            $this->error = $this->mysqli->error;
            $this->errno = errno::FAILED_EXECUTE;
-           return FALSE;
+           return false;
        }
 
        return true;
@@ -166,6 +167,87 @@ class TableBalance {
 
       $stmt->close();
       return true;
+   }
+
+   public function checkAndReserveMoney() {
+       if (empty($this->nick)) {
+           die("Invalid nick");
+       }
+
+       if (empty($this->bookingCost)) {
+           die("Invalid booking cost");
+       }
+
+       $query = 'SELECT balance FROM ir_balance WHERE nick = ? FOR UPDATE';
+
+       if (($stmt = $this->mysqli->prepare($query)) == false) {
+           $this->error = $this->mysqli->error;
+           $this->errno = errno::FAILED_PREPARE;
+           return false;
+       }
+
+       if ($stmt->bind_param('s', $this->nick) == false) {
+           $stmt->close();
+           $this->error = $this->mysqli->error;
+           $this->errno = errno::FAILED_BINDPARAM;
+           return false;
+       }
+
+     $this->success = $stmt->execute();
+     if (!$this->success) {
+        $this->error = $this->error . ": Failed to reserve money.";
+        return false;
+     }
+     $result = $stmt->get_result();
+     if ($row = $result->fetch_array()) {
+        $this->balance = $row[0];
+        if (is_null($this->balance) || $this->balance < $this->bookingCost) {
+          $this->errno = 1;
+          $this->error = "NOT SUFFICIENT BALANCE";
+          return false;
+        }
+     } else {
+        $this->errno = 1;
+        $this->error .= $stmt->error . " MISSING DATA";
+        return false;
+     }
+     $stmt->close();
+     return true;
+   }
+
+   public function deductMoney() {
+       $query = "UPDATE ir_balance SET last_updated = CURRENT_TIMESTAMP, " .
+                " balance = balance - ? WHERE nick = ?";
+
+       if (is_null($this->bookingCost) ) {
+           $this->errno = errno::INVALID_COST;
+           $this->error .= ": BOOKING COST IS NULL";
+           return false;
+       }
+
+       if (($stmt = $this->mysqli->prepare($query)) == false) {
+           $this->error = $this->mysqli->error;
+           $this->errno = errno::FAILED_PREPARE;
+           return false;
+       }
+
+       if ($stmt->bind_param('is', $this->bookingCost, $this->nick) == false) {
+           $stmt->close();
+           $this->error = $this->mysqli->error;
+           $this->errno = errno::FAILED_BINDPARAM;
+           return false;
+       }
+
+       if ($stmt->execute() == false) {
+           $stmt->close();
+           $this->error = $this->mysqli->error;
+           $this->errno = errno::FAILED_EXECUTE;
+           return false;
+       }
+
+       $this->balance = $this->balance - $this->bookingCost;
+       $stmt->close();
+       return true;
    }
 }
 

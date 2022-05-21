@@ -51,7 +51,7 @@ EOF;
        $this->viewGridItem("50-iragu-user-profile.php", "Profile");
        $this->viewGridItem("20-iragu-user-recharge.php", "Recharge");
        $this->viewGridItem("07-iragu-check-availability.php", "Check Availability");
-       $this->viewGridItem("30-iragu-user-court-booking.php", "Book Court");
+       $this->viewGridItem("booking.php", "Book Court");
        $this->viewGridItem("invite.php", "Invite Friends");
        $this->viewGridItem("logout.php", "Logout");
    }

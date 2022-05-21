@@ -27,6 +27,7 @@ class TablePassbook {
    public $balance;
    public $credit;
    public $debit;
+   public $bookingId;
    public $trx_info;
    public $error;
    public $errno;
@@ -48,6 +49,59 @@ class TablePassbook {
            return false;
        }
        $this->nick = $_SESSION['userid'];
+       return true;
+   }
+
+   public function booking() {
+       if (is_null($this->mysqli)) {
+           $this->error = "DB Connection object missing";
+           $this->errno = errno::INVALID_DBOBJ;
+           return false;
+       }
+       if (empty($this->debit)) {
+           $this->error = "Invalid booking cost";
+           $this->errno = errno::INVALID_AMOUNT;
+           return false;
+       }
+       if (empty($this->bookingId)) {
+           $this->error = "Invalid booking id";
+           $this->errno = errno::FAIL;
+           return false;
+       }
+       if (empty($this->balance)) {
+           $this->error = "TablePassbook::booking():Invalid balance amount";
+           $this->errno = errno::INVALID_AMOUNT;
+           return false;
+       }
+       if (empty($this->nick)) {
+           die("Invalid nick");
+       }
+       $trx_info = "Court Booking: " . $this->bookingId;
+       $query = "INSERT INTO ir_passbook (nick, trx_info, debit, " .
+           " running_total, booking_id) VALUES (?, ?, ?, ?, ?);";
+       if (($stmt = $this->mysqli->prepare($query)) == FALSE) {
+           $this->error = $this->mysqli->error;
+           $this->errno = errno::FAILED_PREPARE;
+           return FALSE;
+       }
+       if ($stmt->bind_param('ssiii', $this->nick,
+                                      $trx_info,
+                                      $this->debit,
+                                      $this->balance,
+                                      $this->bookingId) == FALSE) {
+           $stmt->close();
+           $this->error = $this->mysqli->error;
+           $this->errno = errno::FAILED_BINDPARAM;
+           return FALSE;
+       }
+
+       if ($stmt->execute() == FALSE) {
+           $stmt->close();
+           $this->error = $this->mysqli->error;
+           $this->errno = errno::FAILED_EXECUTE;
+           return FALSE;
+       }
+       $stmt->close();
        return true;
    }
 

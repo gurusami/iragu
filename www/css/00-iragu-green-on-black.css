@@ -8,6 +8,7 @@
   --text-color: MediumSpringGreen;
   --error-text-color: Crimson;
   --FF: "Lucida Console", "Courier New", monospace;
+  --superscript-color: DarkCyan;
   font-size: 2em; 
 }
 
@@ -27,6 +28,16 @@ label {
 
 .form_label {
   color: var(--text-color);
+}
+
+sup {
+   color: var(--superscript-color);
+   font-size: smaller;
+}
+
+table, th, td {
+   border: 1px solid var(--text-color);
+   align: center;
 }
 
 input {
@@ -117,6 +128,7 @@ form.ir-form-login {
 
 .grid-container {
   background-color: #202020;
+  color: var(--text-color);
   display: grid;
   grid-template-columns: auto auto auto;
   padding: 5px;
@@ -217,6 +229,8 @@ button {
 
 #div_status {
    width: 80%;
+   margin-top: 20px;
+   margin-bottom: 20px;
    margin-left: 10%;
    color: var(--error-text-color);
    border: 1px solid var(--error-text-color);
@@ -224,6 +238,12 @@ button {
 }
 
 #p_error {
+   padding: 0px;
+   text-align: center;
+}
+
+#p_pass {
+   color: var(--text-color);
    padding: 0px;
    text-align: center;
 }

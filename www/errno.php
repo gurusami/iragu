@@ -27,6 +27,7 @@ class errno {
    const FAILED_RESTORE_SESSION = 10;
    const MISMATCH_PASSWD        = 11;
    const UNAUTHORIZED           = 12;
+   const INSUFFICIENT_BALANCE   = 13;
 
    /* The range 50 to 99 is reserved for DB failures. */
    const FAILED_BINDPARAM    = 50;
@@ -34,6 +35,7 @@ class errno {
    const FAILED_FETCH_OBJECT = 52;
    const FAILED_PREPARE      = 53;
    const FAILED_LOGIN        = 54;
+   const FAILED_COST_CALC    = 55;
 
    /* The range from 100 to 149 is reserved for INVALID data. */
    const INVALID_AMOUNT       = 100;
@@ -43,15 +45,19 @@ class errno {
    const INVALID_EMAIL        = 104;
    const INVALID_STATE        = 105;
    const INVALID_OTP          = 106;
+   const INVALID_COST         = 107;
+   const INVALID_BOOKING_ID   = 108;
 
    /* The range from 150 to 199 is reserved for MISSING data. */
-   const NOT_FOUND_RECORD    = 150;
-   const NULL_OBJECT         = 151;
-   const MISSING_NICK        = 152;
-   const MISSING_FULLNAME    = 153;
-   const MISSING_EMAIL       = 154;
-   const MISSING_MOBILE      = 155;
-   const MISSING_PASSWD      = 156;
+   const NOT_FOUND_RECORD      = 150;
+   const NULL_OBJECT           = 151;
+   const MISSING_NICK          = 152;
+   const MISSING_FULLNAME      = 153;
+   const MISSING_EMAIL         = 154;
+   const MISSING_MOBILE        = 155;
+   const MISSING_PASSWD        = 156;
+   const MISSING_COURT_ID      = 157;
+   const MISSING_PLAY_DURATION = 158;
 
    /* The range 200 to 249 is reserved for Razorpay errors */
    const FAILED_RAZORPAY             = 200;

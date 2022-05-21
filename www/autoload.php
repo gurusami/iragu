@@ -23,6 +23,7 @@ spl_autoload_register(
                 'iraguuserrecharge' => '/20-iragu-user-recharge.php',
                 'iraguuserrechargerazorpay' => '/15-iragu-user-recharge-razorpay.php',
                 'iraguwebapp' => '/iragu-webapp.php',
+                'pagebooking' => '/PageBooking.php',
                 'pagecaptcha' => '/PageCaptcha.php',
                 'pageinvite' => '/PageInvite.php',
                 'pagelogin' => '/PageLogin.php',
@@ -32,7 +33,9 @@ spl_autoload_register(
                 'privateconfig' => '/PrivateConfig.php',
                 'privateconfigsample' => '/PrivateConfigSample.php',
                 'tablebalance' => '/TableBalance.php',
+                'tablebooking' => '/TableBooking.php',
                 'tablecaptcha' => '/TableCaptcha.php',
+                'tablecourt' => '/TableCourt.php',
                 'tableinvite' => '/TableInvite.php',
                 'tablelogin' => '/TableLogin.php',
                 'tablepassbook' => '/TablePassbook.php',
@@ -40,6 +43,7 @@ spl_autoload_register(
                 'tablerazorpaypayment' => '/TableRazorpayPayment.php',
                 'tablerazorpaysession' => '/TableRazorpaySession.php',
                 'tableregisteroffer' => '/TableRegisterOffer.php',
+                'tableslots' => '/TableSlots.php',
                 'textlocal' => '/TextLocal.php'
             );
         }

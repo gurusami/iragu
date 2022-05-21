@@ -160,7 +160,7 @@ EOF;
        $rows['Razorpay Order Id'] = $this->order_id;
        $rows['Recharge Id'] = $this->recharge_id;
        $rows['Cashback'] = paiseToRupees($this->cashback);
-       ir_table($rows);
+       ir_table($rows, 'table_invite');
 
        $rzr_session = new TableRazorpaySession($this->mysqli);
        $rzr_session->order_id = $this->order_id;

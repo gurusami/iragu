@@ -65,7 +65,7 @@ echo <<<EOF
 
 <div class="grid-item">
   <form action="$url" method="post">
-  <button>
+  <button class="button-grid-item">
     <p> $duration </p>
   </button>
   <input type="hidden" name="play_duration" value="$slots">
@@ -118,7 +118,7 @@ echo <<<EOF
 
 <div class="grid-item">
   <form action="$url" method="post">
-  <button>
+  <button class="button-grid-item">
     <p> $slot_in_time </p>
   </button>
   <input type="hidden" name="end_slot" value="$end_slot">
@@ -153,43 +153,37 @@ function showAvailableSlots($url, $mysqli, $court_id, $play_date, $play_duration
 
 function showOneDate($url, $row) {
   $play_date = $row['play_date'];
-  $player_id = getPostAsHiddenInput('player_id');
-  $court_id  = getPostAsHiddenInput('court_id');
 echo <<<EOF
 
 <div class="grid-item">
   <form action=$url method="post">
-  <button>
+  <button class="button-grid-item">
     <p> $play_date </p>
   </button>
   <input type="hidden" name="play_date" value="$play_date">
-  $player_id
-  $court_id 
   </form>
 </div> <!-- grid-item -->
 
 EOF;
 }
 
-function showOneCourt($url, $row) {
-  $court_id = $row['court_id'];
-  $campus_id = $row['campus_id'];
-  $slot_price = $row['price_per_slot'];
-  $player_id = getPostAsHiddenInput('player_id');
+function showOneCourt($url, $rowObj) {
+   $court_id = $rowObj->court_id;
+   $campus_id = $rowObj->campus_id;
+   $slot_price = $rowObj->price_per_slot;
+
 echo <<<EOF
-
 <div class="grid-item">
-  <form action="$url" method="post">
-  <button>
-    <p> $court_id </p>
-    <p> $campus_id </p>
-    <p> $slot_price </p>
-  </button>
-  <input type="hidden" name="court_id" value="$court_id">
-  $player_id
-  </form>
+   <form action="$url" method="post">
+   <button class="button-grid-item">
+       <p> $court_id </p>
+       <p> $campus_id </p>
+       <p> $slot_price </p>
+   </button>
+   <input type="hidden" name="court_id" value="$court_id">
+   <input type="hidden" name="price_per_slot" value="$slot_price">
+   </form>
 </div> <!-- grid-item -->
-
 EOF;
 }
 
@@ -316,7 +310,8 @@ EOF;
      if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if ($this->errno == 0) {
            if ($show) {
-               echo '<p> SUCCESS ' . $this->error . ' </p>';
+               echo '<div id="div_status"> <p id="p_pass"> SUCCESS: ' .
+                   $this->error .  ' </p> </div>';
            }
         } else {
            echo '<div id="div_status"> <p id="p_error"> FAILURE: ' .
@@ -612,48 +607,60 @@ EOF;
       /* If a court is already selected, display the court id. */
       echo "<p> Court ID: ", $_POST['court_id'], "</p>";
     } else {
-      $url = $this->getSelfURL();
-      $query = "SELECT court_id, campus_id, price_per_slot FROM ir_court LIMIT 50";
-      $result = $this->mysqli->query($query);
-
-      while ($row = $result->fetch_assoc()) {
-         showOneCourt($url, $row);
-      }
+       $url = $this->getSelfURL();
+       $courtTable = new TableCourt();
+       $courtTable->mysqli = $this->mysqli;
+       $courtArray = $courtTable->getAll();
+       echo '<div class="grid-container">';
+       foreach ($courtArray as $court) {
+           showOneCourt($url, $court);
+       }
+       echo '</div> <!-- grid-container -->';
     }
   }
 
-  public function pickDate() {
-    if (isset($_POST['play_date'])) {
-      echo "<p> Play Date: ", $_POST['play_date'], "</p>";
-    } else {
-      $url = $this->getSelfURL();
-      $query = "SELECT play_date FROM ir_bookings_open WHERE " .
+   public function pickDate() {
+       if (isset($_POST['play_date'])) {
+           echo "<p> Play Date: ", $_POST['play_date'], "</p>";
+       } else {
+           $url = $this->getSelfURL();
+           $query = "SELECT play_date FROM ir_bookings_open WHERE " .
                "play_date >= CURRENT_DATE";
-      $result = $this->mysqli->query($query);
-      while ($row = $result->fetch_assoc()) {
-         showOneDate($url, $row);
-      }
-    }
-  } /* pickDate() */
+           $result = $this->mysqli->query($query);
+           if ($result->num_rows == 0) {
+               echo '<p> No dates available </p>';
+           } else {
+               echo '<div class="grid-container">';
+               while ($row = $result->fetch_assoc()) {
+                   showOneDate($url, $row);
+               }
+               echo '</div> <!-- grid-container -->';
+           }
+       }
+   } /* pickDate() */
 
-  public function pickDuration() {
-    if (isset($_POST['play_duration'])) {
-      echo "<p> Play Duration: ", $_POST['play_duration'], "</p>";
-    } else {
-      $url = $this->getSelfURL();
-      for ($slots = 1; $slots < 13; $slots++) {
-         showOneDuration($url, $slots);
-      }
-    }
-  }
+   public function pickDuration() {
+       if (isset($_POST['play_duration'])) {
+           echo "<p> Play Duration: ", $_POST['play_duration'], "</p>";
+       } else {
+           $url = $this->getSelfURL();
+           echo '<div class="grid-container">';
+           for ($slots = 1; $slots < 13; $slots++) {
+               showOneDuration($url, $slots);
+           }
+           echo '</div> <!-- grid-container -->';
+       }
+   }
 
-  public function pickSlots() {
+  public function pickSlots($court_id, $play_date, $play_duration) {
     if (isset($_POST['begin_slot'])) {
       echo "<p> Begin Slot: ", $_POST['begin_slot'], "</p>";
     } else {
       $url = $this->getSelfURL();
-      showAvailableSlots($url, $this->mysqli, $_POST['court_id'],
-                         $_POST['play_date'], $_POST['play_duration']);
+           echo '<div class="grid-container">';
+      showAvailableSlots($url, $this->mysqli, $court_id,
+                         $play_date, $play_duration);
+           echo '</div> <!-- grid-container -->';
     }
   }
 
