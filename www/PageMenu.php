@@ -37,7 +37,6 @@ EOF;
    public function viewAdminMenu() {
        $this->viewGridItem("make-register-offer.php", "Make a registration offer");
        $this->viewGridItem("02-iragu-admin-offer-recharge.php", "Make Recharge Offer");
-       $this->viewGridItem("00-iragu-admin-register-customer.php", "Register a Customer");
        $this->viewGridItem("03-iragu-admin-recharge.php", "Recharge For Customer");
        $this->viewGridItem("04-iragu-admin-add-campus.php", "Add a Campus");
        $this->viewGridItem("05-iragu-admin-court-add.php", "Add Court to Campus");
