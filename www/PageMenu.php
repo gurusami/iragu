@@ -42,7 +42,6 @@ EOF;
        $this->viewGridItem("05-iragu-admin-court-add.php", "Add Court to Campus");
        $this->viewGridItem("06-iragu-admin-bookings-open.php", "Open Bookings");
        $this->viewGridItem("07-iragu-check-availability.php", "Check Availability");
-       $this->viewGridItem("08-iragu-admin-court-booking.php", "Book Court (Admin)");
        $this->viewGridItem("captcha.php", "Add Captcha Challenge (Admin)");
    }
 
