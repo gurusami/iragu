@@ -79,27 +79,27 @@ class TablePassbook {
        $trx_info = "Court Booking: " . $this->bookingId;
        $query = "INSERT INTO ir_passbook (nick, trx_info, debit, " .
            " running_total, booking_id) VALUES (?, ?, ?, ?, ?);";
-       if (($stmt = $this->mysqli->prepare($query)) == FALSE) {
+       if (($stmt = $this->mysqli->prepare($query)) == false) {
            $this->error = $this->mysqli->error;
            $this->errno = errno::FAILED_PREPARE;
-           return FALSE;
+           return false;
        }
        if ($stmt->bind_param('ssiii', $this->nick,
                                       $trx_info,
                                       $this->debit,
                                       $this->balance,
-                                      $this->bookingId) == FALSE) {
+                                      $this->bookingId) == false) {
            $stmt->close();
            $this->error = $this->mysqli->error;
            $this->errno = errno::FAILED_BINDPARAM;
-           return FALSE;
+           return false;
        }
 
-       if ($stmt->execute() == FALSE) {
+       if ($stmt->execute() == false) {
            $stmt->close();
            $this->error = $this->mysqli->error;
            $this->errno = errno::FAILED_EXECUTE;
-           return FALSE;
+           return false;
        }
        $stmt->close();
        return true;
@@ -129,27 +129,27 @@ class TablePassbook {
        $trx_info = "Recharge: " . $recharge_id;
        $query = "INSERT INTO ir_passbook (nick, trx_info, credit, " .
            " running_total, recharge_id) VALUES (?, ?, ?, ?, ?);";
-       if (($stmt = $this->mysqli->prepare($query)) == FALSE) {
+       if (($stmt = $this->mysqli->prepare($query)) == false) {
            $this->error = $this->mysqli->error;
            $this->errno = errno::FAILED_PREPARE;
-           return FALSE;
+           return false;
        }
        if ($stmt->bind_param('ssiii', $this->nick,
                                       $trx_info,
                                       $recharge_amount,
                                       $balance,
-                                      $recharge_id) == FALSE) {
+                                      $recharge_id) == false) {
            $stmt->close();
            $this->error = $this->mysqli->error;
            $this->errno = errno::FAILED_BINDPARAM;
-           return FALSE;
+           return false;
        }
 
-       if ($stmt->execute() == FALSE) {
+       if ($stmt->execute() == false) {
            $stmt->close();
            $this->error = $this->mysqli->error;
            $this->errno = errno::FAILED_EXECUTE;
-           return FALSE;
+           return false;
        }
        $stmt->close();
        return true;
@@ -184,27 +184,27 @@ class TablePassbook {
        $trx_info = "Cashback for Recharge: " . $recharge_id;
        $query = "INSERT INTO ir_passbook (nick, trx_info, credit, " .
            " running_total, recharge_id) VALUES (?, ?, ?, ?, ?);";
-       if (($stmt = $this->mysqli->prepare($query)) == FALSE) {
+       if (($stmt = $this->mysqli->prepare($query)) == false) {
            $this->error = $this->mysqli->error;
            $this->errno = errno::FAILED_PREPARE;
-           return FALSE;
+           return false;
        }
        if ($stmt->bind_param('ssiii', $this->nick,
                                       $trx_info,
                                       $cashback,
                                       $balance,
-                                      $recharge_id) == FALSE) {
+                                      $recharge_id) == false) {
            $stmt->close();
            $this->error = $this->mysqli->error;
            $this->errno = errno::FAILED_BINDPARAM;
-           return FALSE;
+           return false;
        }
 
-       if ($stmt->execute() == FALSE) {
+       if ($stmt->execute() == false) {
            $stmt->close();
            $this->error = $this->mysqli->error;
            $this->errno = errno::FAILED_EXECUTE;
-           return FALSE;
+           return false;
        }
 
        return true;
@@ -235,30 +235,75 @@ class TablePassbook {
        $query = "INSERT INTO ir_passbook (nick, trx_info, credit, " .
            " running_total) VALUES (?, ?, ?, ?);";
 
-       if (($stmt = $mysqli->prepare($query)) == FALSE) {
+       if (($stmt = $mysqli->prepare($query)) == false) {
            $this->error = $mysqli->error;
            $this->errno = errno::FAILED_PREPARE;
-           return FALSE;
+           return false;
        }
 
        if ($stmt->bind_param('ssii', $this->nick,
                                      $trx_info,
                                      $cashback,
-                                     $balance) == FALSE) {
+                                     $balance) == false) {
            $this->error = $stmt->error;
            $this->errno = errno::FAILED_BINDPARAM;
            $stmt->close();
-           return FALSE;
+           return false;
        }
 
-       if ($stmt->execute() == FALSE) {
+       if ($stmt->execute() == false) {
            $this->error = $stmt->error;
            $this->errno = errno::FAILED_EXECUTE;
            $stmt->close();
-           return FALSE;
+           return false;
        }
 
        return true;
+   }
+
+   public function get() {
+       if (empty($this->nick)) {
+           $file = basename(__FILE__, '.php');
+           die("Invalid nick: " . $file . ":" . __LINE__ );
+       }
+       $query = "SELECT DATE(trx_time) as trx_date, trx_info, credit, debit, " .
+                " running_total FROM ir_passbook WHERE nick = ? ORDER BY " .
+                " trx_time DESC LIMIT 50";
+       if (is_null($this->mysqli)) {
+           $this->error = "DB Connection object missing";
+           $this->errno = errno::INVALID_DBOBJ;
+           return false;
+       }
+       if (($stmt = $this->mysqli->prepare($query)) == false) {
+           $this->error = $this->mysqli->error;
+           $this->errno = errno::FAILED_PREPARE;
+           return false;
+       }
+       if ($stmt->bind_param('s', $this->nick) == false) {
+           $stmt->close();
+           $this->error = $this->mysqli->error;
+           $this->errno = errno::FAILED_BINDPARAM;
+           return false;
+       }
+       if ($stmt->execute() == false) {
+           $stmt->close();
+           $this->error = $this->mysqli->error;
+           $this->errno = errno::FAILED_EXECUTE;
+           return false;
+       }
+       if (($result = $stmt->get_result()) == false) {
+           $stmt->close();
+           $this->error = $this->mysqli->error;
+           $this->errno = errno::NOT_FOUND_RECORD;
+           return false;
+       }
+
+       $entries = array();
+       while ($rowObj = $result->fetch_object()) {
+           array_push($entries, $rowObj);
+       }
+       $stmt->close();
+       return $entries;
    }
 }
 

@@ -50,6 +50,7 @@ EOF;
        $this->viewGridItem("20-iragu-user-recharge.php", "Recharge");
        $this->viewGridItem("07-iragu-check-availability.php", "Check Availability");
        $this->viewGridItem("booking.php", "Book Court");
+       $this->viewGridItem("passbook.php", "Passbook");
        $this->viewGridItem("invite.php", "Invite Friends");
        $this->viewGridItem("logout.php", "Logout");
    }

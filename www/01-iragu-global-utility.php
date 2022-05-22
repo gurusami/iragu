@@ -99,12 +99,14 @@ function ir_page_top() {
            $markAdmin = "<sup><small>[admin]</small></sup>";
        }
        $userid = $_SESSION['userid'];
+       $bal = IraguWebapp::paiseToRupees($_SESSION['balance']);
        echo <<<EOF
 <!-- BEGIN: ir_page_top() -->
 <div style="width: 100%; border: 1px solid var(--text-color);">
   <ul class="ul-top-menu">
     <li class="li-top-menu"> $home_url </li>
     <li class="li-top-menu"> User: $userid $markAdmin</li>
+    <li class="li-top-menu"> [Money: $bal] </li>
     <li class="li-top-menu"> <a href="logout.php">Logout</a> </li>
   </ul>
 </div>

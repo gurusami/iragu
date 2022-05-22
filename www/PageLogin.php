@@ -70,12 +70,14 @@ class PageLogin extends IraguWebapp {
        $stmt->execute();
        $stmt->bind_result($valid, $usertype);
        $stmt->fetch();
+       $stmt->close();
 
        if ($valid == 1) {
            $this->pass = true;
            $_SESSION['userid'] = $user;
            $_SESSION['nick'] = $user;
            $_SESSION['usertype'] = $usertype;
+           $this->loadUserBalance();
            return true;
        } else {
            $this->pass = false;
@@ -83,6 +85,16 @@ class PageLogin extends IraguWebapp {
            $this->error = "Login failed";
        }
        return false;
+   }
+
+   public function loadUserBalance() {
+       $tableBalance = new TableBalance($this->mysqli);
+       $balance = $tableBalance->getCurrentBalance();
+       if ($balance == false) {
+           die("Failed to load user balance - " . $tableBalance->error .
+               " (errno: " . $tableBalance->errno . ")");
+       }
+       $_SESSION['balance'] = $balance;
    }
 
    public function showChallenge() {

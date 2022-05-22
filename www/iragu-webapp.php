@@ -735,7 +735,7 @@ EOF;
        $this->cleanup();
    }
 
-   function paiseToRupees($paise) {
+   public static function paiseToRupees($paise) {
        return number_format((float) $paise / 100, 2, '.', '');
    }
 
