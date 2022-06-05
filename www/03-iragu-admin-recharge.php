@@ -37,7 +37,6 @@ if (!isAuthorized()) {
 }
 
 include 'iragu-webapp.php';
-include '01-iragu-global-utility.php';
 
 class IraguAdminCustomerRecharge extends IraguWebapp {
    public $nick     = "";

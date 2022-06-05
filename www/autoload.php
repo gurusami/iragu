@@ -28,6 +28,7 @@ spl_autoload_register(
                 'pagemenu' => '/PageMenu.php',
                 'pagepassbook' => '/PagePassbook.php',
                 'pagerazorpaylanding' => '/PageRazorpayLanding.php',
+                'pageregister' => '/PageRegister.php',
                 'pagesignup' => '/PageSignup.php',
                 'privateconfig' => '/PrivateConfig.php',
                 'privateconfigsample' => '/PrivateConfigSample.php',

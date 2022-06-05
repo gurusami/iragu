@@ -718,7 +718,9 @@ EOF;
        return true;
    }
 
-   /** This is the main top-level function. */
+   /** This is the main top-level function.
+   @param[in]  checkAuth  check if the user is authenticated.
+   @param[in]  beAdmin    check if the user is an admin. */
    public function process($checkAuth = true, $beAdmin = false) {
        if ($checkAuth) {
            $this->is_user_authenticated();

@@ -30,13 +30,6 @@ class TableBalance {
    public $errno;
    public $mysqli;
 
-   function __construct($mysqli) {
-       $this->mysqli = $mysqli;
-       if (!empty($_SESSION['nick'])) {
-           $this->nick = $_SESSION['nick'];
-       }
-   }
-
    public function setDB($mysqli) {
        $this->mysqli = $mysqli;
    }
