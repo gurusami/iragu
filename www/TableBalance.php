@@ -30,6 +30,10 @@ class TableBalance {
    public $errno;
    public $mysqli;
 
+   public function __construct($mysqli) {
+       $this->mysqli = $mysqli;
+   }
+
    public function setDB($mysqli) {
        $this->mysqli = $mysqli;
    }
@@ -49,7 +53,7 @@ class TableBalance {
            return false;
        }
        if (empty($this->nick)) {
-           $this->error = "Invalid nick";
+           $this->error = "Invalid nick - Nick is empty";
            $this->errno = errno::INVALID_NICK;
            return false;
        }

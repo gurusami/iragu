@@ -88,7 +88,12 @@ class PageLogin extends IraguWebapp {
    }
 
    public function loadUserBalance() {
+       if (!isset($this->mysqli) || is_null($this->mysqli)) {
+           die("MySQL connection object is not initialized");
+       }
+
        $tableBalance = new TableBalance($this->mysqli);
+       $tableBalance->setNickFromSession();
        $balance = $tableBalance->getCurrentBalance();
        if ($balance == false) {
            die("Failed to load user balance - " . $tableBalance->error .

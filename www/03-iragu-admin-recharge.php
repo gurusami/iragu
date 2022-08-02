@@ -1,3 +1,6 @@
+THIS PAGE IS BEING REPLACED BY PageRecharge.php.
+This file will eventually be removed.
+
 <?php
 /*******************************************************************************
 Iragu: Badminton Court Management Software

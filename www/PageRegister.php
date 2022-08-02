@@ -83,7 +83,7 @@ class PageRegister extends IraguWebapp {
    }
 
    public function insertBalance() {
-       $tableBalance = new TableBalance();
+       $tableBalance = new TableBalance($this->mysqli);
        $tableBalance->nick = $this->player_id;
        $tableBalance->balance = $this->cashback;
        if ($tableBalance->insert($this->mysqli) == false) {
