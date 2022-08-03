@@ -47,6 +47,7 @@ class errno {
    const INVALID_OTP          = 106;
    const INVALID_COST         = 107;
    const INVALID_BOOKING_ID   = 108;
+   const INVALID_MOBILE_NO    = 109;
 
    /* The range from 150 to 199 is reserved for MISSING data. */
    const NOT_FOUND_RECORD      = 150;

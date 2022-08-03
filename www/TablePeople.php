@@ -32,6 +32,42 @@ class TablePeople {
    public $error;
    public $errno;
 
+   /** Get user details given a mobile number. */
+   public function getUserDetails($mysqli, $mobile) {
+       $query = 'SELECT * FROM ir_people WHERE mobile_no = ?';
+       if (($stmt = $mysqli->prepare($query)) == FALSE) {
+           $this->error = $mysqli->error;
+           $this->errno = errno::FAILED_PREPARE;
+           return FALSE;
+       }
+       $this->mobile_no = $mobile;
+       if ($stmt->bind_param('s', $this->mobile_no) == FALSE) {
+           $stmt->close();
+           $this->error = $mysqli->error;
+           $this->errno = errno::FAILED_BINDPARAM;
+           return FALSE;
+       }
+       if ($stmt->execute() == FALSE) {
+           $stmt->close();
+           $this->error = $mysqli->error;
+           $this->errno = errno::FAILED_EXECUTE;
+           return FALSE;
+       }
+       if (($result = $stmt->get_result()) == false) {
+           $stmt->close();
+           $this->error = $mysqli->error;
+           $this->errno = errno::NOT_FOUND_RECORD;
+           return false;
+       }
+       if (($object = $result->fetch_object()) == false) {
+           $stmt->close();
+           $this->error = $mysqli->error;
+           $this->errno = errno::FAILED_FETCH_OBJECT;
+           return false;
+       }
+       return $object;
+   }
+
    public function get($mysqli, $nick) {
        $query = 'SELECT * FROM ir_people WHERE nick = ?';
        if (($stmt = $mysqli->prepare($query)) == FALSE) {

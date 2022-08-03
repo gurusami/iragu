@@ -150,4 +150,13 @@ function ir_table($data, $id) {
    echo "\n";
 }
 
+/** Check if the given value is a mobile number. Currently, the rule is very
+simple:
+   1. The string must be 10 characters long.
+   2. All the 10 characters must be digits.
+@return true if mobile number, false otherwise. */
+function isMobileNumber($no) {
+   return ((strlen($no) == 10) && ctype_digit($no));
+}
+
 ?>
