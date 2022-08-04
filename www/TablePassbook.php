@@ -112,7 +112,7 @@ class TablePassbook {
            return false;
        }
        if (empty($recharge_amount)) {
-           $this->error = "Invalid recharge amount";
+           $this->error = "TablePassbook: Invalid recharge amount";
            $this->errno = errno::INVALID_AMOUNT;
            return false;
        }
@@ -122,7 +122,7 @@ class TablePassbook {
            return false;
        }
        if (empty($this->nick)) {
-           $this->error = "Invalid nick";
+           $this->error = "TablePassbook: Invalid nick";
            $this->errno = errno::INVALID_NICK;
            return false;
        }
@@ -177,7 +177,7 @@ class TablePassbook {
            return false;
        }
        if (empty($this->nick)) {
-           $this->error = "Invalid nick";
+           $this->error = "TablePassbook: Invalid nick";
            $this->errno = errno::INVALID_NICK;
            return false;
        }
@@ -227,7 +227,7 @@ class TablePassbook {
            return false;
        }
        if (empty($this->nick)) {
-           $this->error = "Invalid nick";
+           $this->error = "TablePassbook: Invalid nick";
            $this->errno = errno::INVALID_NICK;
            return false;
        }

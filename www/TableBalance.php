@@ -106,12 +106,12 @@ class TableBalance {
            return false;
        }
        if (empty($recharge_amount)) {
-           $this->error = "Invalid recharge amount";
+           $this->error = "TableBalance: Invalid recharge amount";
            $this->errno = errno::INVALID_AMOUNT;
            return false;
        }
        if (empty($this->nick)) {
-           $this->error = "Invalid nick";
+           $this->error = "TableBalance: Invalid nick";
            $this->errno = errno::INVALID_NICK;
            return false;
        }

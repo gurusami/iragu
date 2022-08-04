@@ -43,6 +43,7 @@ spl_autoload_register(
                 'tablepeople' => '/TablePeople.php',
                 'tablerazorpaypayment' => '/TableRazorpayPayment.php',
                 'tablerazorpaysession' => '/TableRazorpaySession.php',
+                'tablerecharge' => '/TableRecharge.php',
                 'tablerechargeoffers' => '/TableRechargeOffers.php',
                 'tableregisteroffer' => '/TableRegisterOffer.php',
                 'tableslots' => '/TableSlots.php',
